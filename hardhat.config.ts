@@ -1,7 +1,14 @@
 import { task, HardhatUserConfig } from 'hardhat/config';
-// import 'tsconfig-paths/register';
+
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
+import 'hardhat-deploy';
+import '@nomiclabs/hardhat-ethers';
+
+// This is only for hardhat console
+import '@nomiclabs/hardhat-web3';
+
+import { node_url, accounts } from './utils/network';
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -25,6 +32,15 @@ const config: HardhatUserConfig = {
         runs: 200,
       },
     },
+  },
+  networks: {
+    rinkeby: {
+      url: node_url('rinkeby'),
+      accounts: accounts('rinkeby'),
+    },
+  },
+  namedAccounts: {
+    deployer: 0,
   },
 };
 

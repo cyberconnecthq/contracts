@@ -11,8 +11,9 @@
       "@utils/*": ["utils/*"],
       "@artifacts/*": ["artifacts/*"]
     },
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["./scripts", "./test", "./utils"],
+  "include": ["./scripts", "./test", "./utils", "./deploy"],
   "files": ["./hardhat.config.ts"]
 }
