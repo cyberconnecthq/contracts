@@ -1,6 +1,7 @@
 import 'module-alias/register';
-import { ethers, deployments } from 'hardhat';
-import { InfluencerFactory } from 'typechain/InfluencerFactory';
+import { ethers, deployments, getNamedAccounts } from 'hardhat';
+import { InfluencerFactory } from '@typechain/InfluencerFactory';
+import { signInfluencer } from '@utils/sign-influencer';
 
 async function main() {
   const dep = await deployments.get('InfluencerFactory');
@@ -9,25 +10,13 @@ async function main() {
     dep.address
   )) as InfluencerFactory;
   const influencerName = 'Cybertino';
-  const influencerNameURL = 'cybertino';
-  const resp = await signInfluencer(
-    influencerFactory,
-    influencerName,
-    influencerNameURL
-  );
-  console.log(resp);
+  const influencerNameEncoded = 'cybertino';
+  const metaURL = `https://api.cybertino.io/canvas/${influencerNameEncoded}/`;
+  const resp = await signInfluencer(influencerFactory, influencerName, metaURL);
+  const { deployer } = await getNamedAccounts();
+  await influencerFactory.grantManagerRole(deployer, resp);
+  console.log('influencer addr', resp);
 }
-
-const signInfluencer = async (
-  influencerFactory: InfluencerFactory,
-  influencerName: string,
-  influencerNameURL: string
-) => {
-  const metaurl = `https://api.cybertino.io/canvas/${influencerNameURL}/`;
-  const proxy = await influencerFactory.signInfluencer(influencerName, metaurl);
-  const resp = await proxy.wait();
-  return resp.events![0].address;
-};
 
 main()
   .then(() => process.exit(0))

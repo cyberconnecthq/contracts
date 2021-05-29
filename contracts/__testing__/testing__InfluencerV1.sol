@@ -5,15 +5,14 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "../Storage/InfluencerStorageV0.sol";
-import "../Interface/IInfluencer.sol";
-import "../Interface/ILayer.sol";
+import "./testing__InfluencerStorageV1.sol";
+import "./testing__IInfluencerV1.sol";
 
-contract InfluencerV0 is
-    IInfluencer,
+contract __testing__InfluencerV1 is
+    __testing__IInfluencerV1,
     ERC1155Upgradeable,
     AccessControlUpgradeable,
-    InfluencerStorageV0
+    __testing__InfluencerStorageV1
 {
     using SafeMathUpgradeable for uint256;
 
@@ -46,26 +45,20 @@ contract InfluencerV0 is
      */
     event LayerAdded(uint256 indexed canvasID, LayerToken layerToken);
 
-    function Influencer_init(string memory newName, string memory uri)
+    function Influencer_init(string memory nickname)
         public
         override
         initializer
     {
-        __Context_init_unchained();
-        __ERC165_init_unchained();
-        __AccessControl_init_unchained();
-        __ERC1155_init_unchained(uri);
-        Influencer_init_unchained(newName);
+        Influencer_init_unchained(nickname);
     }
 
-    function Influencer_init_unchained(string memory newName)
+    function Influencer_init_unchained(string memory nickname)
         public
         override
         initializer
     {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(MANAGER_ROLE, msg.sender);
-        _setName(newName);
+        _setNickname(nickname);
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -80,22 +73,29 @@ contract InfluencerV0 is
         returns (bool)
     {
         return
-            interfaceId == type(IInfluencer).interfaceId ||
+            interfaceId == type(__testing__IInfluencerV1).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev Sets influencer name to `newName`.
+     * @dev Sets influencer name to `name_`.
      */
-    function setName(string memory newName) public override onlyManager {
-        name = newName;
+    function setName(string memory name_) public override onlyManager {
+        name = name_;
     }
 
     /**
-     * @dev internal set name
+     * @dev Sets influencer nickname to `nickname_`.
      */
-    function _setName(string memory newName) internal {
-        name = newName;
+    function setNickname(string memory nickname_) public override onlyManager {
+        nickname = nickname_;
+    }
+
+    /**
+     * @dev internal set nickname
+     */
+    function _setNickname(string memory nickname_) internal {
+        nickname = nickname_;
     }
 
     /**

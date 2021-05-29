@@ -17,11 +17,9 @@ describe('Influencer', () => {
     '0x0000000000000000000000000000000000000000000000000000000000000000';
   const ZERO_DATA = '0x';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const range = (start: number, end: number) =>
-    Array.from({ length: end - start }, (v, k) => k + start);
   let influencerU1: InfluencerV0;
 
-  beforeEach(async () => {
+  before(async () => {
     [owner, user1, user2] = await getAccounts();
     const { InfluencerV0 } = await deployments.fixture(['InfluencerV0']);
     influencer = (await ethers.getContractAt(
@@ -33,7 +31,7 @@ describe('Influencer', () => {
     await influencer.Influencer_init(influencerName, uri);
   });
 
-  context('basic', async () => {
+  describe('basic', async () => {
     it('has correct creator name', async () => {
       expect(await influencer.name()).to.eq(influencerName);
     });
@@ -43,7 +41,7 @@ describe('Influencer', () => {
     });
   });
 
-  context('access control', async () => {
+  describe('access control', async () => {
     it('owner has admin role', async () => {
       expect(await influencer.hasRole(adminRole, owner.address)).to.be.true;
     });
@@ -81,8 +79,8 @@ describe('Influencer', () => {
         .reverted;
     });
 
-    context('createCanvas', async () => {
-      context('with manager role', async () => {
+    describe('createCanvas', async () => {
+      describe('with manager role', async () => {
         it('can create new canvas', async () => {
           const canvasID = 0;
           const amount = 1;

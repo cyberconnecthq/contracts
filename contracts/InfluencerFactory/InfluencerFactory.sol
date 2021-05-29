@@ -16,7 +16,7 @@ contract InfluencerFactory is Ownable {
     /**
      * @dev Emitted when new influencer is signed.
      */
-    event InfluencerSigned(string influencerName, address contractAddr);
+    event InfluencerSigned(address contractAddr);
 
     /**
      * @dev stores UpgradeableBeacon that points to Influencer implementation
@@ -39,14 +39,13 @@ contract InfluencerFactory is Ownable {
     /**
      * @dev Create a new ERC1155 token for influencer and emits a {InfluencerSigned} event.
      */
-    function signInfluencer(string memory name, string memory uri)
+    function signInfluencer(bytes memory data)
         public
         onlyOwner
         returns (BeaconProxy)
     {
-        BeaconProxy proxy = new BeaconProxy(address(beacon), "");
-        IInfluencer(address(proxy)).Influencer_init(name, uri);
-        emit InfluencerSigned(name, address(proxy));
+        BeaconProxy proxy = new BeaconProxy(address(beacon), data);
+        emit InfluencerSigned(address(proxy));
         _signedInfluencers[address(proxy)] = true;
         return proxy;
     }

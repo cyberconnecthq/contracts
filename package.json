@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "description": "Cybertino Interactive NFT contracts",
   "main": "index.js",
+  "repository": "git@github.com:cybertino/contracts.git",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "deploy": "npx hardhat deploy",
+    "deploy:rinkeby": "npx hardhat deploy --network rinkeby"
   },
-  "author": "Ryan Li <ryan@ryanli.me>",
+  "author": "Ryan Li <r@cybertinolab.com>",
   "license": "MIT",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

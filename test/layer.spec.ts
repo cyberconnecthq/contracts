@@ -3,14 +3,13 @@ import { expect } from './chai-setup';
 import { ethers, deployments } from 'hardhat';
 import { LayerV0 } from '@typechain/index';
 import { Account, getAccounts } from '@utils/index';
-import { Contract } from 'ethers';
 
 describe('Layer contract', () => {
   let layer: LayerV0;
   let account1: Account;
   let account2: Account;
   const data = '0x';
-  beforeEach(async () => {
+  before(async () => {
     [account1, account2] = await getAccounts();
     const { LayerV0 } = await deployments.fixture(['LayerV0']);
     layer = (await ethers.getContractAt(
@@ -19,7 +18,7 @@ describe('Layer contract', () => {
     )) as LayerV0;
     await layer.__Layer_init('test', 'TEST', 'https://images.cybertino.io/');
   });
-  context('basic', async () => {
+  describe('basic', async () => {
     it('has correct name and symbol', async () => {
       expect(await layer.name()).to.eq('test');
       expect(await layer.symbol()).to.eq('TEST');
@@ -31,7 +30,7 @@ describe('Layer contract', () => {
     });
   });
 
-  context('mint Layer', async () => {
+  describe('mint Layer', async () => {
     // layer.mintLayer(account1);
   });
 });
