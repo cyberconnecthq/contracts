@@ -6,17 +6,24 @@ import { Account, getAccounts } from '@utils/index';
 
 describe('Layer contract', () => {
   let layer: LayerV0;
+  let owner: Account;
   let account1: Account;
-  let account2: Account;
+  let layerU1: LayerV0;
   const data = '0x';
   before(async () => {
-    [account1, account2] = await getAccounts();
+    [owner, account1] = await getAccounts();
     const { LayerV0 } = await deployments.fixture(['LayerV0']);
     layer = (await ethers.getContractAt(
       LayerV0.abi,
       LayerV0.address
     )) as LayerV0;
-    await layer.__Layer_init('test', 'TEST', 'https://images.cybertino.io/');
+    await layer.__Layer_init(
+      'test',
+      'TEST',
+      'https://images.cybertino.io/',
+      owner.address
+    );
+    layerU1 = layer.connect(account1.wallet);
   });
   describe('basic', async () => {
     it('has correct name and symbol', async () => {
@@ -25,12 +32,16 @@ describe('Layer contract', () => {
     });
 
     it('has correct baseURI', async () => {
-      await layer.mintLayer(account1.address, data, 1, 0);
+      await layer.mintLayer(owner.address, data, 1, 0);
       expect(await layer.tokenURI(0)).to.eq('https://images.cybertino.io/0');
     });
   });
 
-  describe('mint Layer', async () => {
-    // layer.mintLayer(account1);
+  describe('owner only', async () => {
+    it('non owner cannot mint', async () => {
+      expect(layerU1.mintLayer(owner.address, data, 1, 0)).to.be.revertedWith(
+        'caller is not the owner'
+      );
+    });
   });
 });

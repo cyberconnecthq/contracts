@@ -8,14 +8,13 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
 
-  const { deployer } = await getNamedAccounts();
+  const { deployer, admin } = await getNamedAccounts();
   const data = await encodeInitData(impl, '__Layer_init', [
     'cybertino_layer',
     'LAYER',
     'https://api.cybertino.io/layer/',
+    admin,
   ]);
-
-  console.log(data);
 
   const implDeployment = await deployments.get(impl);
 

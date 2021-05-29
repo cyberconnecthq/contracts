@@ -19,7 +19,7 @@ contract LayerV0 is
 {
     using AddressUpgradeable for address;
 
-    function __Layer_init(string memory name_, string memory symbol_, string memory uri)
+    function __Layer_init(string memory name_, string memory symbol_, string memory uri, address owner)
         public
         override
         initializer
@@ -29,6 +29,7 @@ contract LayerV0 is
         __ERC165_init_unchained();
         __ERC721_init_unchained(name_, symbol_);
         setBaseURI(uri);
+        transferOwnership(owner);
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -98,7 +99,7 @@ contract LayerV0 is
         bytes memory _data,
         uint32 maxState,
         uint32 currentState
-    ) public {
+    ) public onlyOwner {
         uint256 layerID = layerCount;
 
         layers[layerID] = Layer(false, maxState, currentState, address(0));
@@ -114,7 +115,7 @@ contract LayerV0 is
         address to,
         bytes memory _data,
         address module
-    ) public {
+    ) public onlyOwner {
         uint256 layerID = layerCount;
 
         require(module.isContract(), "module is not a valid contract");
