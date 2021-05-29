@@ -105,7 +105,7 @@ contract LayerV0 is
         layers[layerID] = Layer(false, maxState, currentState, address(0));
         _safeMint(to, layerID, _data);
 
-        layerID++;
+        layerCount++;
     }
 
     /**

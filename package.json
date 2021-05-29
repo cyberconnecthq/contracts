@@ -8,7 +8,8 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy": "npx hardhat deploy",
-    "deploy:rinkeby": "npx hardhat deploy --network rinkeby"
+    "deploy:rinkeby": "npx hardhat deploy --network rinkeby",
+    "ethersacn:rinkeby": "hardhat etherscan-verify --api-key $ETHERSCAN_API_KEY --network rinkeby"
   },
   "author": "Ryan Li <r@cybertinolab.com>",
   "license": "MIT",

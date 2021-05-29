@@ -31,9 +31,14 @@ describe('Layer contract', () => {
       expect(await layer.symbol()).to.eq('TEST');
     });
 
-    it('has correct baseURI', async () => {
+    it('has correct baseURI after mint', async () => {
       await layer.mintLayer(owner.address, data, 1, 0);
       expect(await layer.tokenURI(0)).to.eq('https://images.cybertino.io/0');
+    });
+
+    it('mint again should work', async () => {
+      await layer.mintLayer(owner.address, data, 1, 0);
+      expect(await layer.tokenURI(1)).to.eq('https://images.cybertino.io/1');
     });
   });
 
