@@ -51,7 +51,7 @@ contract LayerV0 is
         view
         override
         validLayerId(id)
-        returns (uint32 maxState, uint32 currencyState)
+        returns (uint32 maxState, uint32 currenctState)
     {
         Layer storage layer = layers[id];
         if (layer.modularLayer) {

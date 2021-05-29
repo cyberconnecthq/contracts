@@ -6,8 +6,7 @@ import {
   InfluencerFactory,
   InfluencerBeacon,
 } from '@typechain/index';
-import { ethers, waffle } from 'hardhat';
-import Influencer from '@artifacts/contracts/Influencer/InfluencerV0.sol/InfluencerV0.json';
+import { ethers, deployments } from 'hardhat';
 import { Contract } from 'ethers';
 
 // use(solidity);
@@ -19,18 +18,25 @@ describe('Manager', () => {
   let mgr: InfluencerFactory;
   let influencer: InfluencerV0;
   let beacon: InfluencerBeacon;
-  const provider = waffle.provider;
+  let influencerAbi: any[];
 
   beforeEach(async () => {
     [owner, user1, user2] = await getAccounts();
-    const influencerFactory = await ethers.getContractFactory('InfluencerV0');
-    influencer = await influencerFactory.deploy();
-
-    const beaconFactory = await ethers.getContractFactory('InfluencerBeacon');
-    beacon = await beaconFactory.deploy(influencer.address);
-
-    const mgrFactory = await ethers.getContractFactory('InfluencerFactory');
-    mgr = await mgrFactory.deploy(beacon.address);
+    const { InfluencerFactory, InfluencerBeacon, InfluencerV0 } =
+      await deployments.fixture(['InfluencerFactory']);
+    mgr = (await ethers.getContractAt(
+      InfluencerFactory.abi,
+      InfluencerFactory.address
+    )) as InfluencerFactory;
+    influencer = (await ethers.getContractAt(
+      InfluencerV0.abi,
+      InfluencerV0.address
+    )) as InfluencerV0;
+    beacon = (await ethers.getContractAt(
+      InfluencerBeacon.abi,
+      InfluencerBeacon.address
+    )) as InfluencerBeacon;
+    influencerAbi = InfluencerV0.abi;
   });
 
   const sign = async (name: string, uri: string) => {
@@ -38,11 +44,7 @@ describe('Manager', () => {
     const resp = await proxy.wait();
     const addr = resp.events![0].address;
 
-    return new Contract(
-      addr,
-      JSON.stringify(Influencer.abi),
-      provider
-    ) as InfluencerV0;
+    return (await ethers.getContractAt(influencerAbi, addr)) as InfluencerV0;
   };
 
   context('sign multiple influencer', async () => {

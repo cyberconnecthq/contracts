@@ -1,8 +1,9 @@
 import 'module-alias/register';
-import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { expect } from './chai-setup';
+import { ethers, deployments } from 'hardhat';
 import { LayerV0 } from '@typechain/index';
 import { Account, getAccounts } from '@utils/index';
+import { Contract } from 'ethers';
 
 describe('Layer contract', () => {
   let layer: LayerV0;
@@ -10,10 +11,13 @@ describe('Layer contract', () => {
   let account2: Account;
   const data = '0x';
   beforeEach(async () => {
-    const layerFactory = await ethers.getContractFactory('LayerV0');
-    layer = await layerFactory.deploy();
-    await layer.__Layer_init('test', 'TEST', 'https://images.cybertino.io/');
     [account1, account2] = await getAccounts();
+    const { LayerV0 } = await deployments.fixture(['LayerV0']);
+    layer = (await ethers.getContractAt(
+      LayerV0.abi,
+      LayerV0.address
+    )) as LayerV0;
+    await layer.__Layer_init('test', 'TEST', 'https://images.cybertino.io/');
   });
   context('basic', async () => {
     it('has correct name and symbol', async () => {

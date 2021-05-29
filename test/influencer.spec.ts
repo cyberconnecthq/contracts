@@ -1,12 +1,9 @@
 import 'module-alias/register';
-import { expect, use } from 'chai';
+import { expect } from './chai-setup';
 import { utils } from 'ethers';
-import { ethers } from 'hardhat';
-import { solidity } from 'ethereum-waffle';
-import { InfluencerV0, InfluencerV0__factory } from '@typechain/index';
+import { ethers, deployments } from 'hardhat';
+import { InfluencerV0 } from '@typechain/index';
 import { Account, getAccounts } from '@utils/index';
-
-use(solidity);
 
 describe('Influencer', () => {
   let influencer: InfluencerV0;
@@ -26,9 +23,12 @@ describe('Influencer', () => {
 
   beforeEach(async () => {
     [owner, user1, user2] = await getAccounts();
-    const influencerFactory: InfluencerV0__factory =
-      await ethers.getContractFactory('InfluencerV0');
-    influencer = await influencerFactory.deploy();
+    const { InfluencerV0 } = await deployments.fixture(['InfluencerV0']);
+    influencer = (await ethers.getContractAt(
+      InfluencerV0.abi,
+      InfluencerV0.address
+    )) as InfluencerV0;
+
     influencerU1 = influencer.connect(user1.wallet);
     await influencer.Influencer_init(influencerName, uri);
   });
