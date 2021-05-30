@@ -7,6 +7,7 @@ import '@nomiclabs/hardhat-ethers';
 
 // This is only for hardhat console
 import '@nomiclabs/hardhat-web3';
+import './scripts/tasks';
 
 import { node_url, accounts } from './utils/network';
 

@@ -13,8 +13,8 @@ async function main() {
   const influencerNameEncoded = 'cybertino';
   const metaURL = `https://api.cybertino.io/canvas/${influencerNameEncoded}/`;
   const resp = await signInfluencer(influencerFactory, influencerName, metaURL);
-  const { deployer } = await getNamedAccounts();
-  await influencerFactory.grantManagerRole(deployer, resp);
+  const { admin } = await getNamedAccounts();
+  await influencerFactory.grantManagerRole(admin, resp);
   console.log('influencer addr', resp);
 }
 

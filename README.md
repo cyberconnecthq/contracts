@@ -9,6 +9,15 @@ Test
 ```
 yarn test
 ```
+Deploy
+```
+yarn deploy
+yarn deploy:rinkeby
+```
+Etherscan veriy
+```
+yarn etherscan:rinkeby
+```
 
 ## Deployed contracts address
 
