@@ -9,12 +9,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deploy } = deployments;
 
   const { deployer, admin } = await getNamedAccounts();
-  const data = await encodeInitData(impl, '__Layer_init', [
-    'cybertino_layer',
-    'LAYER',
-    'https://api.cybertino.io/layer/',
-    admin,
-  ]);
+  const data = await encodeInitData(
+    impl,
+    '__Layer_init',
+    [
+      'cybertino_layer',
+      'LAYER',
+      'https://api.cybertino.io/metadata/layer/',
+      admin,
+    ],
+    hre
+  );
 
   const implDeployment = await deployments.get(impl);
 

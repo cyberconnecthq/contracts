@@ -1,10 +1,12 @@
-import { ethers } from 'hardhat';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 export const encodeInitData = async (
   contractName: string,
   initializer: string,
-  args: string[]
+  args: string[],
+  hre: HardhatRuntimeEnvironment
 ) => {
+  const { ethers } = hre;
   const ImplFactory = await ethers.getContractFactory(contractName);
   const allowNoInitialization = initializer === undefined && args.length === 0;
   initializer = initializer ?? 'initialize';

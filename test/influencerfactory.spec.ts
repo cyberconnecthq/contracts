@@ -8,6 +8,7 @@ import {
   TestingInfluencerV1,
 } from '@typechain/index';
 import { ethers, deployments } from 'hardhat';
+import hardhat from 'hardhat';
 import InfluencerV1Json from '@artifacts/contracts/__testing__/testing__InfluencerV1.sol/__testing__InfluencerV1.json';
 import { signInfluencer } from '@utils/sign-influencer';
 
@@ -40,7 +41,7 @@ describe('Manager', () => {
   });
 
   const sign = async (name: string, uri: string) => {
-    const addr = await signInfluencer(mgr, name, uri);
+    const addr = await signInfluencer(mgr, name, uri, hardhat);
     return proxyContract(addr);
   };
 
