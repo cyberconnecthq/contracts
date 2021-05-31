@@ -9,13 +9,14 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721Metad
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../Interface/ILayer.sol";
 import "../Interface/IModule.sol";
-import "../Storage/LayerStorageV0.sol";
+import "./testing__LayerStorageV1_Struct.sol";
+import "./testing__ILayerV1_Struct.sol";
 
-contract LayerV0 is
+contract __testing__LayerV1_Struct is
     OwnableUpgradeable,
-    ILayer,
+    __testing__ILayerV1_struct,
     ERC721Upgradeable,
-    LayerStorageV0
+    __testing__LayerStorageV1_Struct
 {
     using AddressUpgradeable for address;
 
@@ -53,14 +54,24 @@ contract LayerV0 is
         view
         override
         validLayerId(id)
-        returns (uint32 maxState, uint32 currenctState)
+        returns (
+            uint32 maxState,
+            uint32 currenctState,
+            uint256 positionX,
+            uint256 positionY
+        )
     {
         Layer storage layer = layers[id];
         if (layer.modularLayer) {
             IModule module = IModule(layer.module);
-            return (module.getMaxState(), module.getState());
+            return (module.getMaxState(), module.getState(), 0, 0);
         } else {
-            return (layer.maxState, layer.currentState);
+            return (
+                layer.maxState,
+                layer.currentState,
+                layer.positionX,
+                layer.positionY
+            );
         }
     }
 
@@ -99,11 +110,20 @@ contract LayerV0 is
         address to,
         bytes memory _data,
         uint32 maxState,
-        uint32 currentState
+        uint32 currentState,
+        uint64 positionX,
+        uint64 positionY
     ) public onlyOwner {
         uint256 layerID = layerCount;
 
-        layers[layerID] = Layer(false, maxState, currentState, address(0));
+        layers[layerID] = Layer(
+            false,
+            maxState,
+            currentState,
+            address(0),
+            positionX,
+            positionY
+        );
         _safeMint(to, layerID, _data);
 
         layerCount++;
@@ -127,7 +147,7 @@ contract LayerV0 is
             "module does not satisfy IModule interface"
         );
 
-        layers[layerID] = Layer(true, 0, 0, module);
+        layers[layerID] = Layer(true, 0, 0, module, 0, 0);
         _safeMint(to, layerID, _data);
 
         layerID++;

@@ -9,13 +9,13 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721Metad
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../Interface/ILayer.sol";
 import "../Interface/IModule.sol";
-import "../Storage/LayerStorageV0.sol";
+import "./testing__LayerStorageV1_Inheritance.sol";
 
-contract LayerV0 is
+contract __testing__LayerV1_Inheritance is
     OwnableUpgradeable,
     ILayer,
     ERC721Upgradeable,
-    LayerStorageV0
+    __testing__LayerStorageV1_Inheritance
 {
     using AddressUpgradeable for address;
 
@@ -152,6 +152,13 @@ contract LayerV0 is
      */
     function setBaseURI(string memory uri) public onlyOwner {
         baseURI = uri;
+    }
+
+    /**
+     * @dev Allow owner to set `nickname_`
+     */
+    function setNickname(string memory nickname_) public onlyOwner {
+        nickname = nickname_;
     }
 
     /**

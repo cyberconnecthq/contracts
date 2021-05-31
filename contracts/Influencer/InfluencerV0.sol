@@ -48,7 +48,6 @@ contract InfluencerV0 is
 
     function Influencer_init(string memory newName, string memory uri)
         public
-        override
         initializer
     {
         __Context_init_unchained();
@@ -60,7 +59,6 @@ contract InfluencerV0 is
 
     function Influencer_init_unchained(string memory newName)
         public
-        override
         initializer
     {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -72,11 +70,7 @@ contract InfluencerV0 is
         public
         view
         virtual
-        override(
-            ERC1155Upgradeable,
-            IERC165Upgradeable,
-            AccessControlUpgradeable
-        )
+        override(ERC1155Upgradeable, AccessControlUpgradeable)
         returns (bool)
     {
         return
@@ -87,7 +81,7 @@ contract InfluencerV0 is
     /**
      * @dev Sets influencer name to `newName`.
      */
-    function setName(string memory newName) public override onlyManager {
+    function setName(string memory newName) public onlyManager {
         name = newName;
     }
 
@@ -129,7 +123,7 @@ contract InfluencerV0 is
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) public override onlyManager validCanvasId(id) {
+    ) public onlyManager validCanvasId(id) {
         require(id < canvasCount, "canvas is not created");
         _mint(to, id, amount, data);
     }
@@ -142,7 +136,7 @@ contract InfluencerV0 is
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) public override onlyManager validCanvasIds(ids) {
+    ) public onlyManager validCanvasIds(ids) {
         _mintBatch(to, ids, amounts, data);
     }
 
@@ -153,7 +147,7 @@ contract InfluencerV0 is
         address account,
         uint256 id,
         uint256 amount
-    ) public override onlyManager validCanvasId(id) {
+    ) public onlyManager validCanvasId(id) {
         _burn(account, id, amount);
     }
 
@@ -263,7 +257,7 @@ contract InfluencerV0 is
     /**
      * @dev Sets a new URI for all token types
      */
-    function setURI(string memory uri) public override onlyManager {
+    function setURI(string memory uri) public onlyManager {
         _setURI(uri);
     }
 

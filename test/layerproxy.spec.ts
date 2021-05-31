@@ -1,7 +1,8 @@
 import 'module-alias/register';
 import { expect } from './chai-setup';
 import { ethers, deployments } from 'hardhat';
-import { LayerProxy, LayerV0 } from '@typechain/index';
+import { LayerProxy, LayerV0, TestingLayerV1Struct } from '@typechain/index';
+import LayerV1Json from '@artifacts/contracts/__testing__/testing__LayerV1_Struct.sol/__testing__LayerV1_Struct.json';
 import { Account, getAccounts } from '@utils/index';
 
 describe('Layer Proxy contract', () => {
@@ -13,6 +14,7 @@ describe('Layer Proxy contract', () => {
   let owner: Account;
   let user: Account;
   const data = '0x';
+  const zeroAddr = '0x0000000000000000000000000000000000000000';
   before(async () => {
     [deployer, owner, user] = await getAccounts();
     // after fixture, owner is transferred already
@@ -61,6 +63,36 @@ describe('Layer Proxy contract', () => {
   });
 
   describe('upgrade implementation', async () => {
-    // TODO
+    describe('layer struct', async () => {
+      const tokenID = 1; 
+      const maxState = 10;
+      const currentState = 8;
+      let layerSProxyAdmin: TestingLayerV1Struct;
+      
+      before(async () => {
+        // populate data in layerv0
+        await expect(proxyOwner.mintLayer(user.address, data, maxState, currentState)).to.emit(proxyOwner, 'Transfer').withArgs(zeroAddr, user.address, tokenID);
+      
+        const LayerS = await ethers.getContractFactory('__testing__LayerV1_Struct');
+        const layerS = await LayerS.deploy();
+        const { LayerProxy: layerProxy } = await deployments.fixture(['LayerProxy']);
+        const proxy = (await ethers.getContractAt(
+          layerProxy.abi,
+          layerProxy.address
+        )) as LayerProxy;
+        
+        await expect(proxy.upgradeTo(layerS.address)).to.emit(proxy, 'Upgraded').withArgs(layerS.address);
+
+        const layerSProxy = (await ethers.getContractAt(
+          LayerV1Json.abi,
+          layerProxy.address
+        )) as TestingLayerV1Struct;
+        layerSProxyAdmin = await layerSProxy.connect(owner.wallet);
+      })
+
+      it('preserves data before upgrade', async () => {
+        expect(await layerSProxyAdmin.balanceOf(user.address)).to.eq(1);
+      })
+    });
   });
 });
