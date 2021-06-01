@@ -9,7 +9,8 @@
     "test": "hardhat test",
     "deploy": "npx hardhat deploy",
     "deploy:rinkeby": "npx hardhat deploy --network rinkeby",
-    "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby && hardhat etherscan-verify-proxy --network rinkeby"
+    "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby && hardhat etherscan-verify-proxy --network rinkeby",
+    "console": "npx hardhat console --no-compile"
   },
   "author": "Ryan Li <r@cybertinolab.com>",
   "license": "MIT",
