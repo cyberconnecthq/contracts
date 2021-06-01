@@ -7,6 +7,7 @@ import { Account, getAccounts } from '@utils/index';
 
 describe('Layer Proxy contract', () => {
   let proxy: LayerV0;
+  let layerProxy: LayerProxy;
   let layer: LayerV0;
   let proxyOwner: LayerV0;
   let proxyUser: LayerV0;
@@ -18,16 +19,15 @@ describe('Layer Proxy contract', () => {
   before(async () => {
     [deployer, owner, user] = await getAccounts();
     // after fixture, owner is transferred already
-    const { LayerProxy: layerProxy, LayerV0: layerV0 } =
-      await deployments.fixture(['LayerProxy']);
+    const { LayerProxy: lp, LayerV0: layerV0 } = await deployments.fixture([
+      'LayerProxy',
+    ]);
     layer = (await ethers.getContractAt(
       layerV0.abi,
       layerV0.address
     )) as LayerV0;
-    proxy = (await ethers.getContractAt(
-      layerV0.abi,
-      layerProxy.address
-    )) as LayerV0;
+    proxy = (await ethers.getContractAt(layerV0.abi, lp.address)) as LayerV0;
+    layerProxy = (await ethers.getContractAt(lp.abi, lp.address)) as LayerProxy;
     proxyOwner = proxy.connect(owner.wallet);
     proxyUser = proxy.connect(user.wallet);
   });
@@ -49,7 +49,7 @@ describe('Layer Proxy contract', () => {
     it('has correct baseURI', async () => {
       await proxyOwner.mintLayer(deployer.address, data, 1, 0);
       expect(await proxyOwner.tokenURI(0)).to.eq(
-        'https://api.cybertino.io/layer/0'
+        'https://api.cybertino.io/metadata/layer/0'
       );
     });
   });
@@ -64,35 +64,38 @@ describe('Layer Proxy contract', () => {
 
   describe('upgrade implementation', async () => {
     describe('layer struct', async () => {
-      const tokenID = 1; 
+      const tokenID = 1;
       const maxState = 10;
       const currentState = 8;
       let layerSProxyAdmin: TestingLayerV1Struct;
-      
+
       before(async () => {
         // populate data in layerv0
-        await expect(proxyOwner.mintLayer(user.address, data, maxState, currentState)).to.emit(proxyOwner, 'Transfer').withArgs(zeroAddr, user.address, tokenID);
-      
-        const LayerS = await ethers.getContractFactory('__testing__LayerV1_Struct');
+        await expect(
+          proxyOwner.mintLayer(user.address, data, maxState, currentState)
+        )
+          .to.emit(proxyOwner, 'Transfer')
+          .withArgs(zeroAddr, user.address, tokenID);
+
+        const LayerS = await ethers.getContractFactory(
+          '__testing__LayerV1_Struct'
+        );
         const layerS = await LayerS.deploy();
-        const { LayerProxy: layerProxy } = await deployments.fixture(['LayerProxy']);
-        const proxy = (await ethers.getContractAt(
-          layerProxy.abi,
-          layerProxy.address
-        )) as LayerProxy;
-        
-        await expect(proxy.upgradeTo(layerS.address)).to.emit(proxy, 'Upgraded').withArgs(layerS.address);
+
+        await expect(layerProxy.upgradeTo(layerS.address))
+          .to.emit(layerProxy, 'Upgraded')
+          .withArgs(layerS.address);
 
         const layerSProxy = (await ethers.getContractAt(
           LayerV1Json.abi,
           layerProxy.address
         )) as TestingLayerV1Struct;
-        layerSProxyAdmin = await layerSProxy.connect(owner.wallet);
-      })
+        layerSProxyAdmin = layerSProxy.connect(owner.wallet);
+      });
 
       it('preserves data before upgrade', async () => {
         expect(await layerSProxyAdmin.balanceOf(user.address)).to.eq(1);
-      })
+      });
     });
   });
 });
