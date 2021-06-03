@@ -1,8 +1,9 @@
 import 'module-alias/register';
 import { expect } from './chai-setup';
 import { ethers, deployments } from 'hardhat';
-import { LayerProxy, LayerV0, TestingLayerV1Struct } from '@typechain/index';
-import LayerV1Json from '@artifacts/contracts/__testing__/testing__LayerV1_Struct.sol/__testing__LayerV1_Struct.json';
+import { LayerProxy, LayerV0, TestingLayerV1Inheritance, TestingLayerV1Struct } from '@typechain/index';
+import LayerV1SJson from '@artifacts/contracts/__testing__/testing__LayerV1_Struct.sol/__testing__LayerV1_Struct.json';
+import LayerV1IJson from '@artifacts/contracts/__testing__/testing__LayerV1_Inheritance.sol/__testing__LayerV1_Inheritance.json';
 import { Account, getAccounts } from '@utils/index';
 
 describe('Layer Proxy contract', () => {
@@ -67,8 +68,6 @@ describe('Layer Proxy contract', () => {
       const tokenID = 1;
       const maxState = 10;
       const currentState = 8;
-      let layerSProxyAdmin: TestingLayerV1Struct;
-
       before(async () => {
         // populate data in layerv0
         await expect(
@@ -76,25 +75,104 @@ describe('Layer Proxy contract', () => {
         )
           .to.emit(proxyOwner, 'Transfer')
           .withArgs(zeroAddr, user.address, tokenID);
-
-        const LayerS = await ethers.getContractFactory(
-          '__testing__LayerV1_Struct'
-        );
-        const layerS = await LayerS.deploy();
-
-        await expect(layerProxy.upgradeTo(layerS.address))
-          .to.emit(layerProxy, 'Upgraded')
-          .withArgs(layerS.address);
-
-        const layerSProxy = (await ethers.getContractAt(
-          LayerV1Json.abi,
-          layerProxy.address
-        )) as TestingLayerV1Struct;
-        layerSProxyAdmin = layerSProxy.connect(owner.wallet);
       });
 
-      it('preserves data before upgrade', async () => {
-        expect(await layerSProxyAdmin.balanceOf(user.address)).to.eq(1);
+      context("upgrade to LayerV1_Struct", async () => {
+        let layerSProxyAdmin: TestingLayerV1Struct;
+
+        before(async () => {
+          const LayerS = await ethers.getContractFactory(
+            '__testing__LayerV1_Struct'
+          );
+          const layerS = await LayerS.deploy();
+  
+          await expect(layerProxy.upgradeTo(layerS.address))
+            .to.emit(layerProxy, 'Upgraded')
+            .withArgs(layerS.address);
+  
+          const layerSProxy = (await ethers.getContractAt(
+            LayerV1SJson.abi,
+            layerProxy.address
+          )) as TestingLayerV1Struct;
+          layerSProxyAdmin = layerSProxy.connect(owner.wallet);
+        });
+
+        it('preserves data before upgrade', async () => {
+          expect(await layerSProxyAdmin.balanceOf(user.address)).to.eq(1);
+        });
+
+        it('has correct zero value for previouse layer', async () => {
+          const {maxState: max, currenctState: cur, positionX: posX, positionY: poxY} = await layerSProxyAdmin.getLayer(tokenID);
+          expect(maxState).to.eq(max);
+          expect(currentState).to.eq(cur);
+          expect(posX).to.eq(0);
+          expect(poxY).to.eq(0);
+        })
+
+        context("mint new layer", async () => {
+          const max = 20;
+          const cur = 12;
+          const posX = 3;
+          const poxY = 5;
+          const newTokenID = 2;
+
+          before(async () => {
+            await expect(
+              layerSProxyAdmin.mintLayer(user.address, "0x", max, cur, posX, poxY)
+            )
+              .to.emit(proxyOwner, 'Transfer')
+              .withArgs(zeroAddr, user.address, newTokenID);
+          })
+
+          it('has correct layer info', async () => {
+            const {maxState, currenctState, positionX, positionY} = await layerSProxyAdmin.getLayer(newTokenID);
+            expect(maxState).to.eq(max);
+            expect(currenctState).to.eq(cur);
+            expect(positionX).to.eq(posX);
+            expect(positionY).to.eq(poxY);
+          });
+          
+          it('prev token has correct layer info', async () => {
+            const {maxState: max, currenctState: cur, positionX: posX, positionY: poxY} = await layerSProxyAdmin.getLayer(tokenID);
+          expect(maxState).to.eq(max);
+          expect(currentState).to.eq(cur);
+          expect(posX).to.eq(0);
+          expect(poxY).to.eq(0);
+          });
+        })
+      })
+    });
+
+    describe('layer inheritance', async () => {
+      context("upgrade to LayerV1_Inheritance", async () => {
+        let layerIProxyAdmin: TestingLayerV1Inheritance;
+
+        before(async () => {
+          const LayerI = await ethers.getContractFactory(
+            '__testing__LayerV1_Inheritance'
+          );
+          const layerI = await LayerI.deploy();
+  
+          await expect(layerProxy.upgradeTo(layerI.address))
+            .to.emit(layerProxy, 'Upgraded')
+            .withArgs(layerI.address);
+  
+          const layerSProxy = (await ethers.getContractAt(
+            LayerV1IJson.abi,
+            layerProxy.address
+          )) as TestingLayerV1Inheritance;
+          layerIProxyAdmin = layerSProxy.connect(owner.wallet);
+        });
+
+        it('has empty nickname', async () => {
+          expect(await layerIProxyAdmin.nickname()).to.eq("");
+        });
+
+        it('can set nickname', async () => {
+          const nickname = "huskyo";
+          await layerIProxyAdmin.setNickname(nickname);
+          expect(await layerIProxyAdmin.nickname()).to.eq(nickname);
+        });
       });
     });
   });
