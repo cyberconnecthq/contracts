@@ -28,8 +28,9 @@ const verify = async (addr: string, host: string) => {
   console.log(rsp);
   if (rsp?.status != 200 || rsp.data.status != 1) {
     console.log(rsp);
-    throw 'Successfully verified proxy contracts on etherscan';
+    throw 'failed to verify proxy contracts on etherscan';
   }
+  console.log(`Successfully verified proxy contract on scan at ${addr}`);
   return rsp;
 };
 
