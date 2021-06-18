@@ -2,14 +2,14 @@ import { task } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { submit } from './etherscan-verify-proxy';
-import { sign } from './influencers';
+import { sign, verifyInfluencer } from './influencers';
 
 task(
   'etherscan-verify-proxy',
   'Verify proxy contract on Etherscan',
   async (_, hre) => {
     const { host, networkName } = await getNetwork(hre);
-    await submit(host, networkName);
+    await submit(hre, host, networkName);
   }
 );
 
@@ -27,6 +27,14 @@ task('sign-influencer', 'Sign a Influencer')
     const { host, networkName } = await getNetwork(hre);
     await sign(name, host, networkName, hre);
   });
+
+task(
+  'verify-influencer',
+  'Verify all unverified influencer contracts'
+).setAction(async (_, hre) => {
+  const { host, networkName } = await getNetwork(hre);
+  await verifyInfluencer(host, networkName, hre);
+});
 
 const getNetwork = async (hre: HardhatRuntimeEnvironment) => {
   const chainId = await getChainId(hre);

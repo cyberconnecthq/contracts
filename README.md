@@ -34,3 +34,9 @@ Layer ABI is in `./deployments/<network>/LayerV0.json`
 
 ## Bug
 When you start the project or cleaned the cache with `npx hardhat clean`, the typechain generated files are missing. You have to comment out `import ‘./scripts/tasks` first in `hardhat.config.ts` and run `npx hardhat typechain` first and then uncomment the import statement.
+
+# Functions
+## Sign Influencer
+```
+npx hardhat sign-influencer --name <name> --network <network>
+```

@@ -43,3 +43,11 @@ export function getMnemonic(networkName?: string): string {
 export function accounts(networkName?: string): { mnemonic: string } {
   return { mnemonic: getMnemonic(networkName) };
 }
+
+export function etherscanApiKey(networkName: string): string {
+  const api = process.env['SCAN_API_KEY_' + networkName.toUpperCase()];
+  if (api) {
+    return api;
+  }
+  return '';
+}

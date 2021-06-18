@@ -11,7 +11,7 @@ import './scripts/tasks';
 
 import '@nomiclabs/hardhat-etherscan';
 
-import { node_url, accounts } from './utils/network';
+import { node_url, accounts, etherscanApiKey } from './utils/network';
 import 'dotenv/config';
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -42,13 +42,25 @@ const config: HardhatUserConfig = {
       url: node_url('rinkeby'),
       accounts: accounts('rinkeby'),
     },
+    'bsc-testnet': {
+      url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+      chainId: 97,
+      gasPrice: 20000000000,
+      accounts: accounts('rinkeby'),
+    },
+    bsc: {
+      url: 'https://bsc-dataseed.binance.org/',
+      chainId: 56,
+      accounts: accounts('mainnet'),
+    },
   },
   namedAccounts: {
     deployer: 0,
     admin: 1,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    // apiKey: etherscanApiKey('bsc'),
+    apiKey: etherscanApiKey('eth'),
   },
 };
 

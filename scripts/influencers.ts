@@ -8,9 +8,11 @@ import {
   submitInfluencerBeaconProxy,
 } from './etherscan-verify-proxy';
 
-interface influencerType {
+export interface influencerType {
   name: string;
   address: string;
+  verified: boolean;
+  initData: string;
 }
 
 interface json {
@@ -67,22 +69,91 @@ export const sign = async (
   // influencer beacon
   const beacon = await deployments.get('InfluencerBeacon');
 
-  // submit etherscan for beacon proxy
-  await submitInfluencerBeaconProxy(
-    hre,
-    influencerAddr,
-    beacon.address,
-    initData
-  );
+  let verified = true;
 
-  // submit etherscan for proxy contract
-  await submitInfluencer(host, influencerAddr);
+  // submit etherscan for beacon proxy
+  try {
+    await submitInfluencerBeaconProxy(
+      hre,
+      influencerAddr,
+      beacon.address,
+      initData
+    );
+
+    // submit etherscan for proxy contract
+    await submitInfluencer(hre, host, influencerAddr);
+  } catch (e) {
+    console.error(e);
+    verified = false;
+  }
 
   // write to json file
   influencers.set(name, {
     name,
     address: influencerAddr,
+    verified: verified,
+    initData: initData,
   });
+  let newJSON: json = {};
+  influencers.forEach((value, key) => {
+    newJSON[key] = value;
+  });
+  const rstJSON = JSON.stringify(newJSON);
+
+  fs.writeFileSync(`${dir}/${influencerFactoryAddress}.json`, rstJSON);
+};
+
+export const verifyInfluencer = async (
+  host: string,
+  networkName: string,
+  hre: HardhatRuntimeEnvironment
+) => {
+  const { ethers, deployments, getNamedAccounts } = hre;
+  const influencerFactoryJSON = require(`../deployments/${networkName}/InfluencerFactory.json`);
+  const influencerFactoryAddress = influencerFactoryJSON.address;
+  // check if duplicate
+  const dir = `influencers/${networkName}`;
+  const influencers = new Map<string, influencerType>();
+  try {
+    const influencersJSON = require(`../influencers/${networkName}/${influencerFactoryAddress}.json`);
+    for (let value in influencersJSON) {
+      influencers.set(value, influencersJSON[value]);
+    }
+  } catch (e) {
+    // no influencers have been signed
+    throw 'No influencers signed';
+  }
+
+  const notVerifiedInfluencers: influencerType[] = [];
+
+  influencers.forEach((v) => {
+    if (!v.verified) {
+      notVerifiedInfluencers.push(v);
+    }
+  });
+
+  // influencer beacon
+  const beacon = await deployments.get('InfluencerBeacon');
+
+  for (let i = 0; i < notVerifiedInfluencers.length; i++) {
+    const v = notVerifiedInfluencers[i];
+    // submit etherscan for beacon proxy
+    console.log('submit contract for address:', v.address);
+    await submitInfluencerBeaconProxy(
+      hre,
+      v.address,
+      beacon.address,
+      v.initData
+    );
+
+    // submit etherscan for proxy contract
+    await submitInfluencer(hre, host, v.address);
+    influencers.set(v.address, {
+      ...v,
+      verified: true,
+    });
+  }
+
   let newJSON: json = {};
   influencers.forEach((value, key) => {
     newJSON[key] = value;

@@ -3,15 +3,23 @@ import 'dotenv/config';
 import qs from 'qs';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-export async function submit(host: string, networkName: string) {
+export async function submit(
+  hre: HardhatRuntimeEnvironment,
+  host: string,
+  networkName: string
+) {
   const layerProxy = require(`../deployments/${networkName}/LayerProxy.json`);
   const proxyAddr = layerProxy.address;
   console.log('Layer proxy at:', proxyAddr);
-  return verify(proxyAddr, host);
+  return verify(hre, proxyAddr, host);
 }
 
-const verify = async (addr: string, host: string) => {
-  const apiKey = process.env.ETHERSCAN_API_KEY;
+const verify = async (
+  hre: HardhatRuntimeEnvironment,
+  addr: string,
+  host: string
+) => {
+  const apiKey = hre.config.etherscan.apiKey;
   if (apiKey === '') {
     console.error('Must provide ETHERSCAN_API_KEY');
     return;
@@ -26,6 +34,7 @@ const verify = async (addr: string, host: string) => {
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(postData),
   });
+  console.log(rsp);
   if (rsp?.status != 200 || rsp.data.status != 1) {
     console.log(rsp);
     throw 'failed to verify proxy contracts on etherscan';
@@ -34,8 +43,12 @@ const verify = async (addr: string, host: string) => {
   return rsp;
 };
 
-export async function submitInfluencer(host: string, addr: string) {
-  return verify(addr, host);
+export async function submitInfluencer(
+  hre: HardhatRuntimeEnvironment,
+  host: string,
+  addr: string
+) {
+  return verify(hre, addr, host);
 }
 
 export async function submitInfluencerBeaconProxy(
