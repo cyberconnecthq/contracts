@@ -3,7 +3,10 @@ import { InfluencerFactory } from '@typechain/InfluencerFactory';
 import fs from 'fs';
 import { signInfluencer } from '@utils/sign-influencer';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { submitInfluencer } from './etherscan-verify-proxy';
+import {
+  submitInfluencer,
+  submitInfluencerBeaconProxy,
+} from './etherscan-verify-proxy';
 
 interface influencerType {
   name: string;
@@ -49,7 +52,7 @@ export const sign = async (
     dep.address
   )) as InfluencerFactory;
   const metaURL = `https://api.cybertino.io/metadata/canvas/${name}/`;
-  const influencerAddr = await signInfluencer(
+  const { address: influencerAddr, initData } = await signInfluencer(
     influencerFactory,
     name,
     metaURL,
@@ -61,8 +64,16 @@ export const sign = async (
     `new influencer signed at ${influencerAddr}, manager address is :${admin}`
   );
 
+  // influencer beacon
+  const beacon = await deployments.get('InfluencerBeacon');
+
   // submit etherscan for beacon proxy
-  await submitInfluencerBeaconProxy(host);
+  await submitInfluencerBeaconProxy(
+    hre,
+    influencerAddr,
+    beacon.address,
+    initData
+  );
 
   // submit etherscan for proxy contract
   await submitInfluencer(host, influencerAddr);

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import 'dotenv/config';
 import qs from 'qs';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 export async function submit(host: string, networkName: string) {
   const layerProxy = require(`../deployments/${networkName}/LayerProxy.json`);
@@ -25,7 +26,6 @@ const verify = async (addr: string, host: string) => {
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(postData),
   });
-  console.log(rsp);
   if (rsp?.status != 200 || rsp.data.status != 1) {
     console.log(rsp);
     throw 'failed to verify proxy contracts on etherscan';
@@ -36,4 +36,16 @@ const verify = async (addr: string, host: string) => {
 
 export async function submitInfluencer(host: string, addr: string) {
   return verify(addr, host);
+}
+
+export async function submitInfluencerBeaconProxy(
+  hre: HardhatRuntimeEnvironment,
+  proxyAddr: string,
+  beaconAddr: string,
+  initData: string
+) {
+  return hre.run('verify:verify', {
+    address: proxyAddr,
+    constructorArguments: [beaconAddr, initData],
+  });
 }

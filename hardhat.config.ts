@@ -9,7 +9,10 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-web3';
 import './scripts/tasks';
 
+import '@nomiclabs/hardhat-etherscan';
+
 import { node_url, accounts } from './utils/network';
+import 'dotenv/config';
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -43,6 +46,9 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: 0,
     admin: 1,
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
