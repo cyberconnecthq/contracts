@@ -59,8 +59,8 @@ const config: HardhatUserConfig = {
     admin: 1,
   },
   etherscan: {
-    // apiKey: etherscanApiKey('bsc'),
-    apiKey: etherscanApiKey('eth'),
+    apiKey: etherscanApiKey('bsc'),
+    // apiKey: etherscanApiKey('eth'),
   },
 };
 

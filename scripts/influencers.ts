@@ -148,7 +148,7 @@ export const verifyInfluencer = async (
 
     // submit etherscan for proxy contract
     await submitInfluencer(hre, host, v.address);
-    influencers.set(v.address, {
+    influencers.set(v.name, {
       ...v,
       verified: true,
     });
