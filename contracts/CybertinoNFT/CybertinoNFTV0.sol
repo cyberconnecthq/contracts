@@ -13,6 +13,7 @@ import "hardhat/console.sol";
 contract CybertinoNFTV0 is
   ERC1155Upgradeable,
   OwnableUpgradeable,
+  ICybertinoNFT,
   CybertinoNFTStorageV0
 {
   using ECDSAUpgradeable for bytes32;
@@ -21,6 +22,7 @@ contract CybertinoNFTV0 is
   function CybertinoNFT_init(
     string memory _name,
     string memory _uri,
+    string memory _symbol,
     address _signer,
     address _manager
   ) public initializer {
@@ -28,15 +30,17 @@ contract CybertinoNFTV0 is
     __ERC165_init_unchained();
     __Ownable_init_unchained();
     __ERC1155_init_unchained(_uri);
-    CybertinoNFT_init_unchained(_name, _signer, _manager);
+    CybertinoNFT_init_unchained(_name, _symbol, _signer, _manager);
   }
 
   function CybertinoNFT_init_unchained(
     string memory _name,
+    string memory _symbol,
     address _signer,
     address _manager
   ) public initializer {
     name = _name;
+    symbol = _symbol;
     signer = _signer;
     transferOwnership(_manager);
   }
@@ -77,11 +81,10 @@ contract CybertinoNFTV0 is
     _id = _nextId();
     _mint(msg.sender, _id, 0, _data);
 
-    string memory _uri = _createUri(_cid);
-    idToUri[_id] = _uri;
+    idToUri[_id] = _cid;
     maxTokenSupply[_id] = _maxSupply;
 
-    emit URI(_uri, _id);
+    emit URI(uri(_id), _id);
   }
 
   /**
@@ -115,6 +118,10 @@ contract CybertinoNFTV0 is
 
     _mint(_to, _id, _amount, _data);
     tokenSupply[_id] += _amount;
+
+    address operator = _msgSender();
+
+    emit CybertinoMint(operator, _to, _id, _amount, _nonce);
   }
 
   /**
@@ -148,13 +155,6 @@ contract CybertinoNFTV0 is
   }
 
   /**
-   * @dev Sets NFT collection name to `_name`.
-   */
-  function setName(string memory _name) public onlyOwner {
-    name = _name;
-  }
-
-  /**
    * @dev Sets a new URI for all token types
    */
   function setURI(string memory _uri) public onlyOwner {
@@ -167,7 +167,12 @@ contract CybertinoNFTV0 is
    * @return uri of the token or an empty string if it does not exist
    */
   function uri(uint256 _id) public view override returns (string memory) {
-    return idToUri[_id];
+    string memory baseUri = super.uri(0);
+    if (bytes(baseUri).length == 0)  {
+      return "";
+    } else {
+      return string(abi.encodePacked(baseUri, idToUri[_id]));
+    }
   }
 
   /**
@@ -212,15 +217,6 @@ contract CybertinoNFTV0 is
     uint256 _nonce
   ) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(_to, _tokenId, _amount, _nonce));
-  }
-
-  function _createUri(string memory _cid)
-    internal
-    view
-    returns (string memory _uri)
-  {
-    string memory baseUri = super.uri(0);
-    return string(abi.encodePacked(baseUri, _cid));
   }
 
   function _exists(uint256 _id) internal view returns (bool) {

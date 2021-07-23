@@ -34,6 +34,27 @@ describe('CybertinoNFT', () => {
         .withArgs(`${baseUri}0001`, 1);
       expect(await nft.id()).to.equal(1);
     });
+    it('only owner could change the base uri', async () => {
+      await expect(nft.setURI('ipfs://ipfs/')).to.be.revertedWith(
+        'Ownable: caller is not the owner'
+      );
+      await nftAdmin.create('0001', data, 1);
+      await nftAdmin.setURI('ipfs://ipfs/');
+      expect(await nft.uri(1)).to.equal('ipfs://ipfs/0001');
+    });
+  });
+  describe('initializer', async () => {
+    it('initialize could only be called once', async () => {
+      await expect(
+        nft.CybertinoNFT_init(
+          'fakename',
+          'fakeuri',
+          'fakesymbol',
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero
+        )
+      ).to.revertedWith('Initializable: contract is already initialized');
+    });
   });
   describe('mint', async () => {
     it('cannot mint before created', async () => {
@@ -90,7 +111,9 @@ describe('CybertinoNFT', () => {
           deployer.address,
           1,
           1
-        );
+        )
+        .to.emit(nft, 'CybertinoMint')
+        .withArgs(deployer.address, deployer.address, 1, 1, 0);
       expect(await nft.totalSupply(1)).to.equal(1);
       expect(await nft.maxSupply(1)).to.equal(1);
     });
@@ -107,7 +130,9 @@ describe('CybertinoNFT', () => {
           deployer.address,
           1,
           1
-        );
+        )
+        .to.emit(nft, 'CybertinoMint')
+        .withArgs(deployer.address, deployer.address, 1, 1, 0);
       await expect(
         nft.mint(deployer.address, 1, 1, 0, signature, data)
       ).to.revertedWith('CybertinoNFT: already minted');

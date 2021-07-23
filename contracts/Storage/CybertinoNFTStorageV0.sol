@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 // contract CybertinoNFTV1 is CybertinoNFTStorageV1 ... {...}
 contract CybertinoNFTStorageV0 {
   /**
-   * @dev collection name
+   * @dev collection name; token tracker name
    */
   string public name;
 
@@ -26,7 +26,7 @@ contract CybertinoNFTStorageV0 {
   address public signer;
 
   /**
-   * @dev Mapping from token ID to token URI
+   * @dev Mapping from token ID to token URI, excluding base uri
    */
   mapping(uint256 => string) internal idToUri;
 
@@ -49,4 +49,9 @@ contract CybertinoNFTStorageV0 {
    * @dev Paused boolean is turned on in case of emergency.
    */
   bool public paused = false;
+
+  /**
+   * @dev collection symbol; token tracker symbol
+   */
+  string public symbol;
 }

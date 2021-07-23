@@ -7,3 +7,6 @@ typechain
 
 #env
 .env
+
+# local deployments
+deployments/hardhat
