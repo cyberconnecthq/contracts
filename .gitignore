@@ -10,3 +10,6 @@ typechain
 
 # local deployments
 deployments/hardhat
+
+# local scripts
+scripts/tmp.ts

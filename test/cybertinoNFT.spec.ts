@@ -10,7 +10,7 @@ describe('CybertinoNFT', () => {
   let nftAdmin: CybertinoNFTV0;
   let nftPlatform: CybertinoNFTV0;
   const data = '0x';
-  const baseUri = 'https://api.cybertino.com/metadata/';
+  const baseUri = 'https://api.stg.cybertino.io/nft/metadata/';
   let deployer: Account, admin: Account, platformSigner: Account;
   beforeEach(async () => {
     [deployer, admin, platformSigner] = await getAccounts();
@@ -20,8 +20,9 @@ describe('CybertinoNFT', () => {
     nftPlatform = nft.connect(platformSigner.wallet);
   });
   describe('basic', async () => {
-    it('has correct name', async () => {
+    it('has correct name and symbol', async () => {
       expect(await nft.name()).to.eq('CybertinoNFT');
+      expect(await nft.symbol()).to.eq('CYBER_NFT');
     });
   });
   describe('access control', async () => {
@@ -41,6 +42,13 @@ describe('CybertinoNFT', () => {
       await nftAdmin.create('0001', data, 1);
       await nftAdmin.setURI('ipfs://ipfs/');
       expect(await nft.uri(1)).to.equal('ipfs://ipfs/0001');
+    });
+    it('only owner could pause', async () => {
+      await expect(nft.pause()).to.be.revertedWith(
+        'Ownable: caller is not the owner'
+      );
+      await nftAdmin.pause();
+      expect(await nft.paused()).to.be.true;
     });
   });
   describe('initializer', async () => {
@@ -140,6 +148,15 @@ describe('CybertinoNFT', () => {
       expect(await nft.maxSupply(1)).to.equal(2);
     });
   });
-  describe('batch mint', async () => {});
-  describe('paused', async () => {});
+  describe('batch mint', async () => {
+    // TODO:
+  });
+  describe('paused', async () => {
+    it('paused contract cannot mint anymore', async () => {
+      await nftAdmin.pause();
+      await expect(
+        nft.mint(deployer.address, 1, 1, 0, '0x', data)
+      ).to.be.revertedWith('Paused');
+    });
+  });
 });

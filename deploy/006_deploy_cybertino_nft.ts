@@ -16,7 +16,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     log: true,
     args: [
       'CybertinoNFT',
-      'https://api.stg.cybertino.io/nft/metadata',
+      'https://api.stg.cybertino.io/nft/metadata/',
       'CYBER_NFT',
       platformSigner,
       admin,
