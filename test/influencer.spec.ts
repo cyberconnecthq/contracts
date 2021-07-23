@@ -73,9 +73,9 @@ describe('Influencer', () => {
     });
 
     it('other cannot grant/revoke other manager role', async () => {
-      await expect(influencerU1.grantManagerRole(user1.address)).to.reverted;
+      await expect(influencerU1.grantManagerRole(user1.address)).to.be.reverted;
 
-      await expect(influencerU1.revokeRole(managerRole, user1.address)).to
+      await expect(influencerU1.revokeRole(managerRole, user1.address)).to.be
         .reverted;
     });
 

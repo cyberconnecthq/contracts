@@ -7,7 +7,8 @@ import '@nomiclabs/hardhat-ethers';
 
 // This is only for hardhat console
 import '@nomiclabs/hardhat-web3';
-import './scripts/tasks';
+// XXX(@ryanli): This following line makes typechain fail
+// import './scripts/tasks';
 
 import '@nomiclabs/hardhat-etherscan';
 
@@ -57,6 +58,7 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: 0,
     admin: 1,
+    platformSigner: 2,
   },
   etherscan: {
     apiKey: etherscanApiKey('bsc'),

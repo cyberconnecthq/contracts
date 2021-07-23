@@ -19,3 +19,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func;
 func.tags = ['InfluencerFactory'];
 func.dependencies = ['InfluencerBeacon'];
+func.skip = async () => {
+  return process.env.INTERACTIVE !== 'true';
+};

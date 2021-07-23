@@ -7,11 +7,12 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "deploy": "npx hardhat deploy",
+    "deploy": "npx hardhat deploy --write true",
     "deploy:rinkeby": "npx hardhat deploy --network rinkeby",
     "deploy:bsc-testnet": "npx hardhat deploy --network bsc-testnet",
     "deploy:bsc": "npx hardhat deploy --network bsc",
-    "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby && hardhat etherscan-verify-proxy --network rinkeby",
+    "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby",
+    "etherscan-full:rinkeby": "hardhat etherscan-verify --network rinkeby && hardhat etherscan-verify-proxy --network rinkeby",
     "etherscan:bsc-testnet": "hardhat etherscan-verify --network bsc-testnet && hardhat etherscan-verify-proxy --network bsc-testnet",
     "etherscan:bsc": "hardhat etherscan-verify --network bsc && hardhat etherscan-verify-proxy --network bsc",
     "console": "npx hardhat console --no-compile"

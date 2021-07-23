@@ -41,8 +41,8 @@ describe('Manager', () => {
   });
 
   const sign = async (name: string, uri: string) => {
-    const addr = await signInfluencer(mgr, name, uri, hardhat);
-    return proxyContract(addr);
+    const { address } = await signInfluencer(mgr, name, uri, hardhat);
+    return proxyContract(address);
   };
 
   const proxyContract = (addr: string) => {

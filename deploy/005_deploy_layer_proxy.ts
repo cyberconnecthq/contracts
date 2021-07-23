@@ -33,3 +33,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func;
 func.tags = ['LayerProxy'];
 func.dependencies = [impl];
+func.skip = async () => {
+  return process.env.INTERACTIVE !== 'true';
+};

@@ -54,3 +54,19 @@ npx hardhat sign-influencer --name <name> --network <network>
 - LayerV0 at 0xf657Cf4f3fD674Df92bC938413e28B9bB45D7ED0
 - Influencer (Cybertino) at 0x72290F51cD8bee08483ff4F9276151532da61cD7
 
+
+# Cybertino NFT
+
+## Structure
+Cybertino NFT Contract is a pausable, ownable contract with a `owner`. It also has a `signer` which is used by Cybertino Platform to lazy mint NFTs.
+
+Following [this](https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies), Cybertino NFT Contract is deployed `TransparentUpgradeableProxy`, which has a `ProxyAdmin` contract to upgrade the proxy. `ProxyAdmin` contract has a `admin`.
+
+In the end there are 3 special roles,
+- Deployer/Admin: deploy and upgrades contract
+- Contract Owner: can create new NFT, pause NFT minting process
+- Signer: platform to sign off the lazy minting
+
+## ABI info
+`hardhat-deploy` creates a json file in `./deployments` folder under `CybertinoNFTV0.json` which has all the ABI information for the `Proxy` and `Implementation` details. In this file, you’ll find `address` as the proxy’s address, which is where all the transaction should be sent to. `implementation` contains the implementation contract’s address.
+

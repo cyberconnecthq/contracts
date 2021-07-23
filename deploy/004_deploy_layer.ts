@@ -15,3 +15,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func;
 func.tags = ['LayerV0'];
+func.skip = async () => {
+  return process.env.INTERACTIVE !== 'true';
+};
