@@ -15,20 +15,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   let signer = platformSigner;
   if (tags['prd']) {
     baseUri = 'https://api.cybertino.io/metadata/nft/';
-    name = 'CybertinoNFT';
-    sym = 'CYBER_NFT';
-    signer = '0x3c00F16C8ead50ea73535e41a4eB351648738f7c';
+    name = 'CybertinoPartnerNFT';
+    sym = 'CYBER_PARTNER_NFT';
+    signer = '0x36459993cd2d43cB944997aD1C5b9cE4e7f7E236';
   } else if (tags['prd-testnet']) {
     baseUri = 'https://api.cybertino.io/metadata/nft/';
-    name = 'CybertinoNFTRinkeby';
-    sym = 'CYBER_NFT_RINKEBY';
+    name = 'CybertinoPartnerNFTRinkeby';
+    sym = 'CYBER_NFT_PARTNER_RINKEBY';
   } else {
     baseUri = 'https://api.stg.cybertino.io/metadata/nft/';
-    name = 'CybertinoNFTTest';
-    sym = 'CYBER_NFT_TEST';
+    name = 'CybertinoPartnerNFTTest';
+    sym = 'CYBER_PARTNER_NFT_TEST';
   }
 
-  await deploy('CybertinoNFTV0', {
+  await deploy('CybertinoPartnerNFTV0', {
+    contract: 'CybertinoNFTV0',
     from: deployer,
     proxy: {
       proxyContract: 'OpenZeppelinTransparentProxy',

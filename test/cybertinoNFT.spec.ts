@@ -1,6 +1,5 @@
 import 'module-alias/register';
 import { expect } from './chai-setup';
-import { utils } from 'ethers';
 import { ethers, deployments } from 'hardhat';
 import { CybertinoNFTV0 } from '@typechain/index';
 import { Account, getAccounts, getContract } from '@utils/index';
@@ -8,21 +7,19 @@ import { Account, getAccounts, getContract } from '@utils/index';
 describe('CybertinoNFT', () => {
   let nft: CybertinoNFTV0;
   let nftAdmin: CybertinoNFTV0;
-  let nftPlatform: CybertinoNFTV0;
   const data = '0x';
-  const baseUri = 'https://api.stg.cybertino.io/nft/metadata/';
+  const baseUri = 'https://api.stg.cybertino.io/metadata/nft/';
   let deployer: Account, admin: Account, platformSigner: Account;
   beforeEach(async () => {
     [deployer, admin, platformSigner] = await getAccounts();
     let { CybertinoNFTV0 } = await deployments.fixture('CybertinoNFTV0');
     nft = await getContract(CybertinoNFTV0);
     nftAdmin = nft.connect(admin.wallet);
-    nftPlatform = nft.connect(platformSigner.wallet);
   });
   describe('basic', async () => {
     it('has correct name and symbol', async () => {
-      expect(await nft.name()).to.eq('CybertinoNFT');
-      expect(await nft.symbol()).to.eq('CYBER_NFT');
+      expect(await nft.name()).to.eq('CybertinoNFTTest');
+      expect(await nft.symbol()).to.eq('CYBER_NFT_TEST');
     });
   });
   describe('access control', async () => {
@@ -149,7 +146,42 @@ describe('CybertinoNFT', () => {
     });
   });
   describe('batch mint', async () => {
-    // TODO:
+    it('could batch mint', async () => {
+      await nftAdmin.create('0001', data, 2);
+      await nftAdmin.create('0002', data, 3);
+      const hash1 = await nft.getMessageHash(deployer.address, 1, 1, 0);
+      const hashBytes1 = ethers.utils.arrayify(hash1);
+      const signature1 = await platformSigner.wallet.signMessage(hashBytes1);
+      const hash2 = await nft.getMessageHash(deployer.address, 2, 2, 1);
+      const hashBytes2 = ethers.utils.arrayify(hash2);
+      const signature2 = await platformSigner.wallet.signMessage(hashBytes2);
+      await expect(
+        nft.batchMint(
+          deployer.address,
+          [1, 2],
+          [1, 2],
+          [0, 1],
+          [signature1, signature2],
+          [data, data]
+        )
+      )
+        .to.emit(nft, 'TransferSingle')
+        .withArgs(
+          deployer.address,
+          ethers.constants.AddressZero,
+          deployer.address,
+          1,
+          1
+        )
+        .to.emit(nft, 'TransferSingle')
+        .withArgs(
+          deployer.address,
+          ethers.constants.AddressZero,
+          deployer.address,
+          2,
+          2
+        );
+    });
   });
   describe('paused', async () => {
     it('paused contract cannot mint anymore', async () => {
@@ -158,5 +190,27 @@ describe('CybertinoNFT', () => {
         nft.mint(deployer.address, 1, 1, 0, '0x', data)
       ).to.be.revertedWith('Paused');
     });
+  });
+  describe('batch create', async () => {
+    const ids = [
+      '001',
+      '002',
+      '003',
+      '004',
+      '005',
+      '006',
+      '007',
+      '008',
+      '009',
+      '010',
+    ];
+    const maxSupplys = [100, 100, 100, 100, 100, 100, 100, 100, 100, 100];
+    const datas = [data, data, data, data, data, data, data, data, data, data];
+    it('batch create should create same result', async () => {
+      await nftAdmin.batchCreate(ids, datas, maxSupplys);
+      expect(await nft.id()).to.equal(10);
+    });
+    // it('batch create gas report', async () => {
+    // });
   });
 });

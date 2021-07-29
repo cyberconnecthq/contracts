@@ -8,7 +8,6 @@ import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import '../Storage/CybertinoNFTStorageV0.sol';
 import '../Interface/ICybertinoNFT.sol';
-import "hardhat/console.sol";
 
 contract CybertinoNFTV0 is
   ERC1155Upgradeable,
@@ -69,13 +68,14 @@ contract CybertinoNFTV0 is
    * @dev Creates a new NFT type
    * @param _cid Content identifier
    * @param _data Data to pass if receiver is contract
+   * @param _maxSupply Max supply of this NFT
    * @return _id The newly created token ID
    */
-  function create(string calldata _cid, bytes calldata _data, uint256 _maxSupply)
-    external
-    onlyOwner
-    returns (uint256 _id)
-  {
+  function create(
+    string calldata _cid,
+    bytes calldata _data,
+    uint256 _maxSupply
+  ) public onlyOwner returns (uint256 _id) {
     require(bytes(_cid).length > 0, 'Err: Missing Content Identifier');
 
     _id = _nextId();
@@ -85,6 +85,24 @@ contract CybertinoNFTV0 is
     maxTokenSupply[_id] = _maxSupply;
 
     emit URI(uri(_id), _id);
+  }
+
+  /**
+   * @dev Batch create new NFT types
+   * @param _cids Content identifiers
+   * @param _datas Datas to pass if receiver is contract
+   * @param _maxSupplys Max supplys of these  NFTs
+   * @return _id The latest token ID
+   */
+  function batchCreate(
+    string[] calldata _cids,
+    bytes[] calldata _datas,
+    uint256[] calldata _maxSupplys
+  ) external onlyOwner returns (uint256 _id) {
+    for (uint256 i = 0; i < _cids.length; i++) {
+      create(_cids[i], _datas[i], _maxSupplys[i]);
+    }
+    return id.current();
   }
 
   /**
@@ -113,7 +131,10 @@ contract CybertinoNFTV0 is
     );
     bytes32 messageHash = getMessageHash(_to, _id, _amount, _nonce);
     require(!executed[messageHash], 'CybertinoNFT: already minted');
-    require(_verify(messageHash, _signature), 'CybertinoNFT: invalid signature');
+    require(
+      _verify(messageHash, _signature),
+      'CybertinoNFT: invalid signature'
+    );
     executed[messageHash] = true;
 
     _mint(_to, _id, _amount, _data);
@@ -143,14 +164,7 @@ contract CybertinoNFTV0 is
     bytes[] calldata _data
   ) external pausable {
     for (uint256 i = 0; i < _ids.length; i++) {
-      mint(
-        _to,
-        _ids[i],
-        _amounts[i],
-        _nonces[i],
-        _signatures[i],
-        _data[i]
-      );
+      mint(_to, _ids[i], _amounts[i], _nonces[i], _signatures[i], _data[i]);
     }
   }
 
@@ -168,8 +182,8 @@ contract CybertinoNFTV0 is
    */
   function uri(uint256 _id) public view override returns (string memory) {
     string memory baseUri = super.uri(0);
-    if (bytes(baseUri).length == 0)  {
-      return "";
+    if (bytes(baseUri).length == 0) {
+      return '';
     } else {
       return string(abi.encodePacked(baseUri, idToUri[_id]));
     }
@@ -236,5 +250,4 @@ contract CybertinoNFTV0 is
     bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
     return ethSignedMessageHash.recover(signature) == signer;
   }
-
 }
