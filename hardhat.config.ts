@@ -34,17 +34,25 @@ const config: HardhatUserConfig = {
       url: node_url('rinkeby'),
       accounts: accounts('testnet'),
       gas: 2100000,
+      tags: ['stg'],
     },
     'bsc-testnet': {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
       chainId: 97,
       gasPrice: 20000000000,
       accounts: accounts('testnet'),
+      tags: ['stg'],
     },
     bsc: {
       url: 'https://bsc-dataseed.binance.org/',
       chainId: 56,
       accounts: accounts('mainnet'),
+      tags: ['prd'],
+    },
+    mainnet: {
+      url: node_url('mainnet'),
+      accounts: accounts('mainnet'),
+      tags: ['prd'],
     },
   },
   namedAccounts: {
