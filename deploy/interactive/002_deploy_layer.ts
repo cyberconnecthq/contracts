@@ -8,9 +8,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer, admin } = await getNamedAccounts();
 
   let name: string, sy: string, oracle: string;
+  let interval: number, threshold: number;
   const maxState = 3;
-  const interval = 24 * 60 * 60; // one day
-  const threshold = 500;
 
   if (network.tags['prd']) {
     name = 'CybertinoCoinMarketCapLayer';
@@ -24,13 +23,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (network.name === 'rinkeby') {
     oracle = '0xECe365B379E1dD183B20fc5f022230C044d51404';
+    interval = 30 * 60; // one day
+    threshold = 5;
   } else if (network.name === 'mainnet') {
     oracle = '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c';
+    interval = 24 * 60 * 60; // one day
+    threshold = 500;
   } else if (network.name === 'hardhat') {
     // FIXME: use a random address to depoy locally and test with
     let Aggregator = await deployments.get('MockAggregator');
     oracle = Aggregator.address;
-    // oracle = '0x';
+    interval = 24 * 60 * 60; // one day
+    threshold = 500;
   } else {
     throw 'Network not supported';
   }

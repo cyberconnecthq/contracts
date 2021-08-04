@@ -41,7 +41,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   } else {
     tokens = stgTokens;
   }
-  for (let i = 1; i < stgTokens.length; i++) {
+  for (let i = 0; i < stgTokens.length; i++) {
     const tx = await nftAdmin.createCanvas(
       tokens[i][0] as string,
       '0x',
