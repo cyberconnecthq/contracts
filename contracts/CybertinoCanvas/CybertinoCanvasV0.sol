@@ -27,8 +27,8 @@ contract CybertinoCanvasV0 is
         __Context_init_unchained();
         __ERC165_init_unchained();
         __Ownable_init_unchained();
-        __ERC1155_init_unchained(uri);
-        CybertinoCanvas_init_unchained(_name);
+        __ERC1155_init_unchained(_uri);
+        CybertinoCanvas_init_unchained(_name, _symbol, _signer, _owner);
     }
 
     function CybertinoCanvas_init_unchained(string memory _name, string memory _symbol, address _signer, address _owner)
@@ -38,18 +38,18 @@ contract CybertinoCanvasV0 is
         name = _name;
         symbol = _symbol;
         signer = _signer;
-        transferOwnership(_manager);
+        transferOwnership(_owner);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
-        override(ERC1155Upgradeable, AccessControlUpgradeable)
+        override(ERC1155Upgradeable)
         returns (bool)
     {
         return
-            interfaceId == type(IInfluencer).interfaceId ||
+            interfaceId == type(ICybertinoCanvas).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
@@ -68,15 +68,15 @@ contract CybertinoCanvasV0 is
      */
     function createCanvas(
         string calldata _cid,
-        bytes calldata _data
+        bytes calldata _data,
         LayerToken[] calldata _tokens,
-        uint256 _maxSupply,
+        uint256 _maxSupply
     ) external onlyOwner returns (uint256 _id) {
         require(bytes(_cid).length > 0, 'Err: Missing Content Identifier');
 
         _id = _nextId();
 
-        canvases[_id].id = canvasID;
+        canvases[_id].id = _id;
         canvases[_id].layerCount = _tokens.length;
         for (uint256 i = 0; i < _tokens.length; i++) {
             canvases[_id].layerTokens[i] = _tokens[i];
@@ -160,8 +160,8 @@ contract CybertinoCanvasV0 is
     /**
      * @dev Sets a new URI for all token types
      */
-    function setURI(string memory uri) public onlyOwner {
-        _setURI(uri);
+    function setURI(string memory _uri) public onlyOwner {
+        _setURI(_uri);
     }
 
   /**

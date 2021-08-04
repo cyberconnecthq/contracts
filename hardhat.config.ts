@@ -54,6 +54,9 @@ const config: HardhatUserConfig = {
       accounts: accounts('mainnet'),
       tags: ['prd'],
     },
+    hardhat: {
+      tags: ['stg'],
+    },
   },
   namedAccounts: {
     deployer: 0,

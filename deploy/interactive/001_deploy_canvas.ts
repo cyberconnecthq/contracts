@@ -14,12 +14,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     uri = 'https://api.cybertino.io/nft/metadata/';
     sy = 'CYBER_INTERACTIVE_NFT';
     // TODO:
-    // signer =
+    signer = '0';
   } else if (network.tags['stg']) {
     name = 'CybertinoInteractiveTest';
     uri = 'https://api.stg.cybertino.io/nft/metadata/';
     sy = 'CYBER_INTERACTIVE_NFT_TEST';
     signer = platformSigner;
+  } else {
+    throw 'Network not supported';
   }
 
   await deploy('CybertinoCanvasV0', {
@@ -34,4 +36,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 export default func;
-func.tags = ['CybertinoNFTV0'];
+func.tags = ['CybertinoCanvasV0', 'interactive'];
