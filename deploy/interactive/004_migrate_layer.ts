@@ -46,9 +46,15 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   let CMCLayer = await deployments.get('CMCLayerV0');
   const layer: CMCLayerV0 = await getContract(CMCLayer);
   const layerAdmin: CMCLayerV0 = layer.connect(admin.wallet);
+
   for (let i = 0; i < layers.length; i++) {
-    layerAdmin.create(admin.address, layers[i], 0, '0x');
+    const tx = await layerAdmin.create(admin.address, layers[i], 0, '0x');
+    const receipt = await tx.wait();
+    console.log(receipt.blockNumber);
   }
+
+  const id = await layer.id();
+  console.log(id);
 
   return true;
 };

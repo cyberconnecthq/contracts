@@ -41,8 +41,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   } else {
     tokens = stgTokens;
   }
-  for (let i = 0; i < stgTokens.length; i++) {
-    nftAdmin.createCanvas(
+  for (let i = 1; i < stgTokens.length; i++) {
+    const tx = await nftAdmin.createCanvas(
       tokens[i][0] as string,
       '0x',
       [
@@ -53,7 +53,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       ],
       tokens[i][1] as number
     );
+    const receipt = await tx.wait();
+    console.log(receipt.blockNumber);
   }
+
+  const id = await nft.id();
+  console.log(id);
 
   return true;
 };
