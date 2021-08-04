@@ -51,7 +51,7 @@ contract InfluencerStorageV0 {
   /**
    * @dev tokenID to Canvas
    */
-  mapping(uint256 => Canvas) canvases;
+  mapping(uint256 => Canvas) public canvases;
 
   /**
    * @dev Cybertino Platform signer

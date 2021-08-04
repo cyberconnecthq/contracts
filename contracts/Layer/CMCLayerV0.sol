@@ -135,7 +135,7 @@ contract CMCLayerV0 is
      * @dev Throws if caller does not own layer of `id`
      */
     modifier onlyLayerOwner(uint256 id) {
-        require(ownerOf(id) == msg.sender, "only layer owner");
+        require(ownerOf(id) == _msgSender(), "only layer owner");
         _;
     }
 

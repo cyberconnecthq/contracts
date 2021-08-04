@@ -73,6 +73,7 @@ contract CybertinoCanvasV0 is
         uint256 _maxSupply
     ) external onlyOwner returns (uint256 _id) {
         require(bytes(_cid).length > 0, 'Err: Missing Content Identifier');
+        require(_tokens.length > 0, 'Err: Must have at least one layer');
 
         _id = _nextId();
 
@@ -82,7 +83,7 @@ contract CybertinoCanvasV0 is
             canvases[_id].layerTokens[i] = _tokens[i];
         }
 
-        _mint(msg.sender, _id, 0, _data);
+        _mint(_msgSender(), _id, 0, _data);
 
         idToUri[_id] = _cid;
         maxTokenSupply[_id] = _maxSupply;
@@ -177,6 +178,22 @@ contract CybertinoCanvasV0 is
       return string(abi.encodePacked(baseUri, idToUri[_id]));
     }
   }
+
+  /**
+   * @dev get Layer Token <address, id> pair, used to query token states
+   * with ILayer contracts
+   */
+  function getLayerTokens(uint256 _id) public view returns (ILayer[] memory, uint256[] memory) {
+    Canvas storage canvas = canvases[_id];
+    ILayer[] memory layers = new ILayer[](canvas.layerCount);
+    uint256[] memory ids = new uint256[](canvas.layerCount);
+    for (uint256 i = 0; i < canvas.layerCount; i++) {
+      layers[i] = canvas.layerTokens[i].layer;
+      ids[i] = canvas.layerTokens[i].layerID;
+    }
+    return (layers, ids);
+  }
+
 
   /**
    * @dev Returns the total quantity for a token ID

@@ -33,7 +33,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   let layerDep = await deployments.get('CMCLayerV0');
   let layerAddress = layerDep.address;
-  const tokens = stgTokens;
+  let tokens = [];
+  if (network.tags['prd']) {
+    tokens = prdTokens;
+  } else if (network.tags['stg']) {
+    tokens = stgTokens;
+  } else {
+    tokens = stgTokens;
+  }
   for (let i = 0; i < stgTokens.length; i++) {
     nftAdmin.createCanvas(
       tokens[i][0] as string,
