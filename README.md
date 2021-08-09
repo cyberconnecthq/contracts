@@ -70,3 +70,11 @@ In the end there are 3 special roles,
 ## ABI info
 `hardhat-deploy` creates a json file in `./deployments` folder under `CybertinoNFTV0.json` which has all the ABI information for the `Proxy` and `Implementation` details. In this file, you’ll find `address` as the proxy’s address, which is where all the transaction should be sent to. `implementation` contains the implementation contract’s address.
 
+
+## TODO
+- change to safeMint
+
+# Cybertino x CMC
+
+## TODO
+format solidity code

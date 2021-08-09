@@ -6,5 +6,5 @@ interface ILayer {
     function getLayer(uint256 id)
         external
         view
-        returns (uint32 maxState, uint32 currencyState);
+        returns (uint32 stateCount, uint32 currenctState);
 }
