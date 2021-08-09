@@ -9,7 +9,6 @@ import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 import "../Interface/ILayer.sol";
 import "../Storage/CMCLayerStorageV0.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "hardhat/console.sol";
 
 contract CMCLayerV0 is
     OwnableUpgradeable,
@@ -71,7 +70,6 @@ contract CMCLayerV0 is
       require(id.current() > 0, "Err: no layer created");
       (int256 price, uint256 timestamp) = _getPrice();
       if (lastPrice == 0) {
-        console.log('here');
         globalCurrentState = 0;
         lastPrice = price;
         lastUpdatedAt = timestamp;
@@ -83,6 +81,14 @@ contract CMCLayerV0 is
       globalCurrentState = desiredState;
       lastPrice = price;
       lastUpdatedAt = timestamp;
+    }
+
+    /**
+     * @dev set threshold
+     * @param _threshold a new threshold value in bp
+     */
+    function setThreshold(int256 _threshold) external onlyOwner {
+      threshold = _threshold;
     }
 
     /**
@@ -100,7 +106,6 @@ contract CMCLayerV0 is
       return layers[_id].cids[_index];
     }
 
-
     function _nextId() internal returns (uint256) {
         id.increment();
         return id.current();
@@ -113,17 +118,11 @@ contract CMCLayerV0 is
     function _desiredState(int256 price) internal view returns (uint32) {
       int256 priceDelta = price - lastPrice;
       int256 percentage = priceDelta * 10000 / lastPrice;
-      console.log('Last price');
-      console.logInt(lastPrice);
-      console.log('percentage');
-      console.logInt(percentage);
       if (priceDelta > 0) {
-        console.log('delta > 0');
         if (percentage >= threshold) {
           return 1;
         }
       } else {
-        console.log('delta <= 0');
         if (-percentage >= threshold) {
           return 2;
         }

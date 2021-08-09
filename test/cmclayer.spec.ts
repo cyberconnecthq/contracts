@@ -24,6 +24,7 @@ describe('CMCLayer', () => {
     it('has correct name and symbol', async () => {
       expect(await nft.name()).to.eq('CybertinoCoinMarketCapLayerTest');
       expect(await nft.symbol()).to.eq('CYBER_CMC_LAYER_TEST');
+      expect(await nft.threshold()).to.eq(500);
     });
   });
 
@@ -65,7 +66,6 @@ describe('CMCLayer', () => {
       await nft.updateAll();
       expect(await nft.lastPrice()).to.equal(100);
       const rst = await nft.getLayer(1);
-      console.log(rst);
       expect(rst.stateCount).to.equal(3);
       expect(rst.currentState).to.equal(0);
     });
@@ -118,6 +118,18 @@ describe('CMCLayer', () => {
       await expect(nft.updateAll()).to.be.revertedWith(
         'Err: must update after set interval'
       );
+    });
+  });
+
+  describe('test set threshold', async () => {
+    it('non owner cannot set threshold', async () => {
+      await expect(nft.setThreshold(5)).to.be.revertedWith(
+        'Ownable: caller is not the owner'
+      );
+    });
+    it('owner can set threshold', async () => {
+      await nftAdmin.setThreshold(5);
+      expect(await nft.threshold()).to.eq(5);
     });
   });
 });

@@ -13,6 +13,7 @@
     "deploy:bsc": "npx hardhat deploy --network bsc",
     "deploy-interactive": "npx hardhat deploy --tags interactive",
     "deploy-interactive:rinkeby": "npx hardhat deploy --network rinkeby --tags interactive",
+    "deploy-interactive:eth": "npx hardhat deploy --network mainnet --tags interactive",
     "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby",
     "etherscan-full:rinkeby": "hardhat etherscan-verify --network rinkeby && hardhat etherscan-verify-proxy --network rinkeby",
     "etherscan:bsc-testnet": "hardhat etherscan-verify --network bsc-testnet && hardhat etherscan-verify-proxy --network bsc-testnet",

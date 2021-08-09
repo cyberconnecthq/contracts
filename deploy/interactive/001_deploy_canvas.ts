@@ -13,8 +13,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     name = 'CybertinoInteractive';
     uri = 'https://api.cybertino.io/nft/metadata/';
     sy = 'CYBER_INTERACTIVE_NFT';
-    // TODO:
-    signer = '0';
+    signer = '0xc044d55E0b7bD3740FD1747491A0b3C0e5387E4B';
   } else if (network.tags['stg']) {
     name = 'CybertinoInteractiveTest';
     uri = 'https://api.stg.cybertino.io/nft/metadata/';

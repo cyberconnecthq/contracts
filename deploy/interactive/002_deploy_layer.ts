@@ -23,7 +23,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (network.name === 'rinkeby') {
     oracle = '0xECe365B379E1dD183B20fc5f022230C044d51404';
-    interval = 30 * 60; // one day
+    interval = 30 * 60;
     threshold = 5;
   } else if (network.name === 'mainnet') {
     oracle = '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c';

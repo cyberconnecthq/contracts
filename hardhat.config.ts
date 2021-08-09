@@ -53,6 +53,7 @@ const config: HardhatUserConfig = {
       url: node_url('mainnet'),
       accounts: accounts('mainnet'),
       tags: ['prd'],
+      gasPrice: 15,
     },
     hardhat: {
       tags: ['stg'],

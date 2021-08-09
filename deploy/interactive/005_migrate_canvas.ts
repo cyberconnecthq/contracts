@@ -13,11 +13,11 @@ const stgTokens = [
 ];
 
 const prdTokens = [
-  ['39268218-c683-4388-824d-395a1ec80435', 10],
-  ['d39b5381-0ef0-48f8-a16b-fdff67042622', 10],
-  ['1241ca9c-c42a-4a04-b405-e205addc5ed8', 50],
-  ['08a70800-15e8-4109-b112-426c0d4f8e9f', 240],
-  ['e352db78-d31b-4a95-b8e4-5457c6f67ed3', 690],
+  ['ea3451a4-794b-4be6-85a7-cf8a388c0292', 10],
+  ['c98ae8b8-7f05-4aae-8862-c7ea919c09ef', 10],
+  ['599d5fe0-a8b6-412f-9360-9b02e8bbf7e3', 50],
+  ['454e2883-affb-4c80-b23c-bba2983a602c', 240],
+  ['a40493b0-2922-4e74-beb4-8d1227565042', 690],
 ];
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
