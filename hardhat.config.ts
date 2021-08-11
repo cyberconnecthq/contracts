@@ -49,7 +49,6 @@ const config: HardhatUserConfig = {
       url: node_url('mainnet'),
       accounts: accounts('mainnet'),
       tags: ['prd'],
-      gasPrice: 30,
     },
     'bsc-testnet': {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
