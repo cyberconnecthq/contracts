@@ -41,4 +41,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 export default func;
-func.tags = ['CybertinoNFTV0'];
+func.tags = ['CybertinoNFTV0_Partner', 'nft'];

@@ -3,55 +3,59 @@
 pragma solidity 0.8.4;
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
-import "../Storage/CybertinoCanvasStorageV0.sol";
-import "../Interface/ICybertinoCanvas.sol";
-import "../Interface/ILayer.sol";
+import '../Storage/CybertinoCanvasStorageV0.sol';
+import '../Interface/ICybertinoCanvas.sol';
+import '../Interface/ILayer.sol';
 
 contract CybertinoCanvasV0 is
-    ERC1155Upgradeable,
-    OwnableUpgradeable,
-    ICybertinoCanvas,
-    InfluencerStorageV0
+  ERC1155Upgradeable,
+  OwnableUpgradeable,
+  ICybertinoCanvas,
+  InfluencerStorageV0
 {
-
   using ECDSAUpgradeable for bytes32;
   using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    function CybertinoCanvas_init(string memory _name, string memory _uri, string memory _symbol, address _signer, address _owner)
-        public
-        initializer
-    {
-        __Context_init_unchained();
-        __ERC165_init_unchained();
-        __Ownable_init_unchained();
-        __ERC1155_init_unchained(_uri);
-        CybertinoCanvas_init_unchained(_name, _symbol, _signer, _owner);
-    }
+  function CybertinoCanvas_init(
+    string memory _name,
+    string memory _uri,
+    string memory _symbol,
+    address _signer,
+    address _owner
+  ) public initializer {
+    __Context_init_unchained();
+    __ERC165_init_unchained();
+    __Ownable_init_unchained();
+    __ERC1155_init_unchained(_uri);
+    CybertinoCanvas_init_unchained(_name, _symbol, _signer, _owner);
+  }
 
-    function CybertinoCanvas_init_unchained(string memory _name, string memory _symbol, address _signer, address _owner)
-        public
-        initializer
-    {
-        name = _name;
-        symbol = _symbol;
-        signer = _signer;
-        transferOwnership(_owner);
-    }
+  function CybertinoCanvas_init_unchained(
+    string memory _name,
+    string memory _symbol,
+    address _signer,
+    address _owner
+  ) public initializer {
+    name = _name;
+    symbol = _symbol;
+    signer = _signer;
+    transferOwnership(_owner);
+  }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC1155Upgradeable)
-        returns (bool)
-    {
-        return
-            interfaceId == type(ICybertinoCanvas).interfaceId ||
-            super.supportsInterface(interfaceId);
-    }
+  function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(ERC1155Upgradeable)
+    returns (bool)
+  {
+    return
+      interfaceId == type(ICybertinoCanvas).interfaceId ||
+      super.supportsInterface(interfaceId);
+  }
 
   modifier pausable {
     if (paused) {
@@ -60,47 +64,48 @@ contract CybertinoCanvasV0 is
       _;
     }
   }
-    /**
-     * @dev Creates a new Canvas type
-     * @param _cid Content identifier
-     * param _data Data to pass if receiver is contract
-     * @return _id the newly created token ID
-     */
-    function createCanvas(
-        string calldata _cid,
-        bytes calldata _data,
-        LayerToken[] calldata _tokens,
-        uint256 _maxSupply
-    ) external onlyOwner returns (uint256 _id) {
-        require(bytes(_cid).length > 0, 'Err: Missing Content Identifier');
-        require(_tokens.length > 0, 'Err: Must have at least one layer');
 
-        _id = _nextId();
+  /**
+   * @dev Creates a new Canvas type
+   * @param _cid Content identifier
+   * param _data Data to pass if receiver is contract
+   * @return _id the newly created token ID
+   */
+  function createCanvas(
+    string calldata _cid,
+    bytes calldata _data,
+    LayerToken[] calldata _tokens,
+    uint256 _maxSupply
+  ) external onlyOwner returns (uint256 _id) {
+    require(bytes(_cid).length > 0, 'Err: Missing Content Identifier');
+    require(_tokens.length > 0, 'Err: Must have at least one layer');
 
-        canvases[_id].id = _id;
-        canvases[_id].layerCount = _tokens.length;
-        for (uint256 i = 0; i < _tokens.length; i++) {
-            canvases[_id].layerTokens[i] = _tokens[i];
-        }
+    _id = _nextId();
 
-        _mint(_msgSender(), _id, 0, _data);
-
-        idToUri[_id] = _cid;
-        maxTokenSupply[_id] = _maxSupply;
-
-        emit URI(uri(_id), _id);
+    canvases[_id].id = _id;
+    canvases[_id].layerCount = _tokens.length;
+    for (uint256 i = 0; i < _tokens.length; i++) {
+      canvases[_id].layerTokens[i] = _tokens[i];
     }
 
-    /**
-     * @dev Mints an existing Canvas NFT
-     * @notice Enforces a maximum of 1 minting event per NFT type per account
+    _mint(_msgSender(), _id, 0, _data);
+
+    idToUri[_id] = _cid;
+    maxTokenSupply[_id] = _maxSupply;
+
+    emit URI(uri(_id), _id);
+  }
+
+  /**
+   * @dev Mints an existing Canvas NFT
+   * @notice Enforces a maximum of 1 minting event per NFT type per account
    * @param _to Account to mint NFT to (i.e. the owner)
    * @param _id ID (i.e. type) of NFT to mint
    * @param _amount number of NFTs of same type to mint
    * @param _nonce platform nounce to prevent replay
    * @param _signature Verified signature granting _account an NFT
    * @param _data Data to pass if receiver is contract
-     */
+   */
   function mint(
     address _to,
     uint256 _id,
@@ -117,7 +122,10 @@ contract CybertinoCanvasV0 is
     );
     bytes32 messageHash = getMessageHash(_to, _id, _amount, _nonce);
     require(!executed[messageHash], 'CybertinoCanvas: already minted');
-    require(_verify(messageHash, _signature), 'CybertinoCanvas: invalid signature');
+    require(
+      _verify(messageHash, _signature),
+      'CybertinoCanvas: invalid signature'
+    );
     executed[messageHash] = true;
 
     _mint(_to, _id, _amount, _data);
@@ -147,23 +155,16 @@ contract CybertinoCanvasV0 is
     bytes[] calldata _data
   ) external pausable {
     for (uint256 i = 0; i < _ids.length; i++) {
-      mint(
-        _to,
-        _ids[i],
-        _amounts[i],
-        _nonces[i],
-        _signatures[i],
-        _data[i]
-      );
+      mint(_to, _ids[i], _amounts[i], _nonces[i], _signatures[i], _data[i]);
     }
   }
 
-    /**
-     * @dev Sets a new URI for all token types
-     */
-    function setURI(string memory _uri) public onlyOwner {
-        _setURI(_uri);
-    }
+  /**
+   * @dev Sets a new URI for all token types
+   */
+  function setURI(string memory _uri) public onlyOwner {
+    _setURI(_uri);
+  }
 
   /**
    * @dev Returns the uri of a token given its ID
@@ -172,8 +173,8 @@ contract CybertinoCanvasV0 is
    */
   function uri(uint256 _id) public view override returns (string memory) {
     string memory baseUri = super.uri(0);
-    if (bytes(baseUri).length == 0)  {
-      return "";
+    if (bytes(baseUri).length == 0) {
+      return '';
     } else {
       return string(abi.encodePacked(baseUri, idToUri[_id]));
     }
@@ -183,7 +184,11 @@ contract CybertinoCanvasV0 is
    * @dev get Layer Token <address, id> pair, used to query token states
    * with ILayer contracts
    */
-  function getLayerTokens(uint256 _id) public view returns (ILayer[] memory, uint256[] memory) {
+  function getLayerTokens(uint256 _id)
+    public
+    view
+    returns (ILayer[] memory, uint256[] memory)
+  {
     Canvas storage canvas = canvases[_id];
     ILayer[] memory layers = new ILayer[](canvas.layerCount);
     uint256[] memory ids = new uint256[](canvas.layerCount);
@@ -193,7 +198,6 @@ contract CybertinoCanvasV0 is
     }
     return (layers, ids);
   }
-
 
   /**
    * @dev Returns the total quantity for a token ID
@@ -256,5 +260,4 @@ contract CybertinoCanvasV0 is
     bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
     return ethSignedMessageHash.recover(signature) == signer;
   }
-
 }

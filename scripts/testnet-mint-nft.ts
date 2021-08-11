@@ -37,6 +37,7 @@ const main = async () => {
   });
   console.log('success');
 };
+
 main()
   .then(() => process.exit(0))
   .catch((error) => {

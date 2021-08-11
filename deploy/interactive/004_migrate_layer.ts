@@ -11,9 +11,9 @@ const legendary = [
 ];
 
 const special = [
-  'Qme9RyB7aTdXhxCK7yAVg588wMiKRUHiQzqaLmwi17WBd6',
-  'QmZrnQKh8hsFjFv1nJMuDm121gNoT9Zx36L174jPVY5Hm1',
-  'QmX5VztgBdoL31vaqzdd8bge9LfqSG8CymNXv1yb8bbaPy',
+  'QmQ9wDaYXZwiKrMd9DU7UPAWWkWXXNdKDKLDark8AyXTJD',
+  'QmNdcN3r7jrNpT4zEsCQWQ2uxQME3G49X3uwFXPnyDaTMP',
+  'QmaSDeTffyvyDiU9fPqqtJJLowN3Jii14TP2PyuEEvaWZF',
 ];
 
 const epic = [

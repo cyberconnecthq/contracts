@@ -89,7 +89,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   return true;
 };
 
-func.tags = ['CybertinoNFTV0_Partner_Migration'];
+func.tags = ['CybertinoNFTV0_Partner_Migration', 'nft'];
 func.id = '002';
 
 export default func;

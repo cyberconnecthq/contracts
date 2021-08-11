@@ -14,6 +14,7 @@
     "deploy:bsc": "npx hardhat deploy --network bsc",
     "deploy:eth": "npx hardhat deploy --network mainnet",
     "etherscan:eth": "hardhat etherscan-verify --network mainnet",
+    "deploy-nft": "npx hardhat deploy --tags nft",
     "deploy-interactive": "npx hardhat deploy --tags interactive",
     "deploy-interactive:rinkeby": "npx hardhat deploy --network rinkeby --tags interactive",
     "deploy-interactive:eth": "npx hardhat deploy --network mainnet --tags interactive",
