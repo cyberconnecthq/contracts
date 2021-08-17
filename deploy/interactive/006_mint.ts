@@ -3,6 +3,8 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { CybertinoCanvasV0 } from '@typechain/index';
 import { getAccounts, getContract, Account } from '@utils/index';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import type { Wallet } from 'ethers';
 
 const tokenCount = [3, 3, 15, 62, 167];
 
@@ -11,23 +13,33 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deploy } = deployments;
   const { ethers } = hre;
 
-  let signer: Account;
+  let signer: Wallet | SignerWithAddress;
 
   const [deployer, admin, stgSigner] = await getAccounts();
+  const prdSigner = ethers.Wallet.fromMnemonic(
+    process.env.INTERACTIVE_SIGNER_MNEMONIC as string
+  );
+  console.log(prdSigner.address);
 
   // FIXME: use a random address to depoy locally and test with
   let dep = await deployments.get('CybertinoCanvasV0');
   const nft: CybertinoCanvasV0 = await getContract(dep);
   const nftAdmin: CybertinoCanvasV0 = nft.connect(admin.wallet);
+  let requiredSigner: string;
 
   if (network.tags['prd']) {
-    // TODO:
-    // signer = '';
-    throw 'err';
+    signer = prdSigner;
+    requiredSigner = '0xc044d55E0b7bD3740FD1747491A0b3C0e5387E4B';
   } else if (network.tags['stg'] || network.tags['prd-testnet']) {
-    signer = stgSigner;
+    signer = stgSigner.wallet;
+    requiredSigner = stgSigner.address;
   } else {
-    signer = stgSigner;
+    signer = stgSigner.wallet;
+    requiredSigner = stgSigner.address;
+  }
+
+  if (signer.address !== requiredSigner) {
+    throw 'Wrong signer';
   }
 
   const ids = [];
@@ -42,7 +54,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const amount = tokenCount[i];
     const hash = await nft.getMessageHash(admin.address, id, amount, nonce);
     const hashBytes = ethers.utils.arrayify(hash);
-    const signature = await signer.wallet.signMessage(hashBytes);
+    const signature = await signer.signMessage(hashBytes);
     ids.push(id);
     amounts.push(amount);
     nonces.push(nonce);
@@ -61,10 +73,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const receipt = await tx.wait();
   console.log(receipt.blockNumber);
 
+  for (let i = 0; i < tokenCount.length; i++) {
+    const id = i + 1;
+    const amount = await nft.balanceOf(admin.address, id);
+    console.log('token #', id, 'amount', amount.toString());
+  }
+
   return true;
 };
 
 export default func;
-func.tags = ['CybertinoCanvasCMC', 'interactive'];
-func.dependencies = ['CybertinoCanvasCMC'];
+func.tags = ['CybertinoCanvasCMCMint', 'interactive'];
+func.dependencies = ['CybertinoCanvasCMCMigrate', 'CMCLayerMigrate'];
 func.id = '003_Mint_CybertinoCanvasCMC_Opensea';

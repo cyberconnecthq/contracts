@@ -64,6 +64,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 export default func;
-func.tags = ['CybertinoCanvasCMC', 'interactive'];
-func.dependencies = ['CybertinoCanvasCMC', 'CMCLayerV0'];
+func.tags = ['CybertinoCanvasCMCMigrate', 'interactive'];
+func.dependencies = ['CMCLayerV0', 'CybertinoCanvasV0'];
 func.id = '002_CybertinoCanvasCMC';
