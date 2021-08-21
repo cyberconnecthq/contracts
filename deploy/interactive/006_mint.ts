@@ -19,7 +19,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const prdSigner = ethers.Wallet.fromMnemonic(
     process.env.INTERACTIVE_SIGNER_MNEMONIC as string
   );
-  console.log(prdSigner.address);
 
   // FIXME: use a random address to depoy locally and test with
   let dep = await deployments.get('CybertinoCanvasV0');

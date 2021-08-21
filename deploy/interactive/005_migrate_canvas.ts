@@ -21,6 +21,7 @@ const prdTokens = [
 ];
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+  throw 'err';
   const { deployments, getNamedAccounts, network } = hre;
   const { deploy } = deployments;
 
