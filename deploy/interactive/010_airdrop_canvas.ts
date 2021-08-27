@@ -7,7 +7,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-wit
 import type { Wallet } from 'ethers';
 
 const addrs = [
-  // '0x475f69aA401DB9841B8199ea1309068B5e86E59B',
+  '0x475f69aA401DB9841B8199ea1309068B5e86E59B',
   '0x3dfd31dc29309e61f7346d01364d274fac2ebedd',
   '0xC42688c5Cf37FAab08DCD4225a4022d8B1bA982f',
   '0x12AC6aFCCe465F2DC93F1b3704be47d3422802e5',
@@ -157,7 +157,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       '0x'
     );
     const receipt = await tx.wait();
-    console.log(`finished ${i} at ${receipt.blockNumber}`);
+    console.log(`finished ${i} at ${receipt.blockNumber}, address ${addrs[i]}`);
     const a = await nft.balanceOf(addrs[i], id);
     if (a.toNumber() !== 1) {
       console.log('ERRRRRRRRRRRRRRRRRRR');

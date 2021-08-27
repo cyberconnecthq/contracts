@@ -15,7 +15,7 @@
     "deploy:eth": "npx hardhat deploy --network mainnet",
     "etherscan:eth": "hardhat etherscan-verify --network mainnet",
     "deploy-nft": "npx hardhat deploy --tags nft",
-    "deploy-interactive": "npx hardhat deploy --tags interactive",
+    "deploy-interactive": "npx hardhat deploy --tags interactive --write true",
     "deploy-interactive:rinkeby": "npx hardhat deploy --network rinkeby --tags interactive",
     "deploy-interactive:eth": "npx hardhat deploy --network mainnet --tags interactive",
     "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby",
@@ -43,9 +43,8 @@
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
     "ethereum-waffle": "^3.3.0",
-    "ethers": "^5.4.5",
-    "fast-csv": "^4.3.6",
-    "hardhat": "^2.6.1",
+    "ethers": "^5.1.4",
+    "hardhat": "^2.3.0",
     "hardhat-deploy": "^0.7.9",
     "module-alias": "^2.2.2",
     "prettier": "^2.3.0",
@@ -63,8 +62,8 @@
     "@artifacts": "artifacts"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.2.1",
     "@openzeppelin/contracts": "^4.1.0",
-    "hardhat-gas-reporter": "^1.0.4"
+    "hardhat-gas-reporter": "^1.0.4",
+    "@chainlink/contracts": "^0.2.1"
   }
 }
