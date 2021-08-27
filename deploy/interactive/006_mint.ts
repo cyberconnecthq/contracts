@@ -9,6 +9,7 @@ import type { Wallet } from 'ethers';
 const tokenCount = [3, 3, 15, 62, 167];
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+  // throw 'error';
   const { deployments, getNamedAccounts, network } = hre;
   const { deploy } = deployments;
   const { ethers } = hre;

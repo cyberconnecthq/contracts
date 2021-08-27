@@ -3,5 +3,7 @@
   "002": 1627406426,
   "001_CMCLayerMigrate": 1628711478,
   "002_CybertinoCanvasCMC": 1628711764,
-  "003_Mint_CybertinoCanvasCMC_Opensea": 1629236549
+  "003_Mint_CybertinoCanvasCMC_Opensea": 1629236549,
+  "004_CMCLayerMigrate_BSC": 1629579165,
+  "005_CybertinoCanvasBSC": 1629579278
 }

@@ -2,6 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+  // throw "error"
   const { deployments, getNamedAccounts, network } = hre;
   const { deploy } = deployments;
 
@@ -12,21 +13,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const maxState = 3;
 
   if (network.tags['prd']) {
-    name = 'CybertinoCoinMarketCapLayer';
-    sy = 'CYBER_CMC_LAYER';
+    name = 'CybertinoBSCLayer';
+    sy = 'CYBER_BSC_LAYER';
   } else if (network.tags['stg']) {
-    name = 'CybertinoCoinMarketCapLayerTest';
-    sy = 'CYBER_CMC_LAYER_TEST';
+    name = 'CybertinoBSCLayerTest';
+    sy = 'CYBER_BSC_LAYER_TEST';
   } else {
     throw 'Network not supported';
   }
 
   if (network.name === 'rinkeby') {
-    oracle = '0xECe365B379E1dD183B20fc5f022230C044d51404';
+    oracle = '0xcf0f51ca2cDAecb464eeE4227f5295F2384F84ED';
     interval = 30 * 60;
     threshold = 5;
   } else if (network.name === 'mainnet') {
-    oracle = '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c';
+    oracle = '0x14e613AC84a31f709eadbdF89C6CC390fDc9540A';
     interval = 24 * 60 * 60; // one day
     threshold = 500;
   } else if (network.name === 'hardhat') {
@@ -38,7 +39,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     throw 'Network not supported';
   }
 
-  const deployResult = await deploy('CMCLayerV0', {
+  const deployResult = await deploy('CMCLayerV0_BSC', {
+    contract: 'CMCLayerV0',
     from: deployer,
     proxy: {
       proxyContract: 'OpenZeppelinTransparentProxy',
@@ -50,6 +52,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 export default func;
-func.tags = ['CMCLayerV0', 'interactive'];
+func.tags = ['CMCLayerV0_BSC', 'interactive'];
 func.dependencies = ['MockAggregator'];
 // func.runAtTheEnd = true; // For test environment to have  price aggregator deployed first

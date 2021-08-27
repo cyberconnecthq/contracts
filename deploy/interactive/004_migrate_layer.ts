@@ -37,7 +37,7 @@ const common = [
 const layers = [legendary, special, epic, rare, common];
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  throw 'err';
+  // throw 'error';
   const { deployments, getNamedAccounts, network } = hre;
   const { deploy } = deployments;
 
