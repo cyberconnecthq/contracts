@@ -4,18 +4,16 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { getAccounts, getContract } from '@utils/index';
 
 const nfts = [
-  ['56a706ff-987b-402f-8a81-e4c86bd77300', 11],
-  ['cebc4886-631f-482c-8ea2-a29085d74040', 111],
-  ['b1f1f777-ddd9-4e40-a937-c2152f099168', 777],
-  ['3594b480-bf57-4990-a341-51d9aabb5941', 50],
-  ['3d09ef8f-efb1-4963-80c5-5a89b24d3044', 700],
+  ['8a0437ec-6067-49dd-b21f-83c2f1669221', 75],
+  ['6b9b3c74-9308-4be8-a76e-6e945ca5fca7', 150],
+  ['100f31d1-4190-4d0f-a9ba-2df9890b111', 15],
 ];
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, ethers } = hre;
   const [_, admin] = await getAccounts();
 
-  let dep = await deployments.get('CybertinoNFTV0');
+  let dep = await deployments.get('CybertinoPartnerNFTV0');
   const nft = await getContract(dep);
   const nftAdmin = nft.connect(admin.wallet);
 
@@ -27,23 +25,25 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     maxSupplys.push(nfts[i][1]);
     datas.push('0x');
   }
-  const gasPrice = ethers.utils.parseUnits('15', 'gwei');
 
-  await nftAdmin.batchCreate(cids, datas, maxSupplys, {
-    gasLimit: 3000000,
-    gasPrice: gasPrice,
-  });
+  const tx = await nftAdmin.batchCreate(cids, datas, maxSupplys);
+  const receipt = await tx.wait();
+  console.log('blocknumber', receipt.blockNumber);
   const id = await nft.id();
-  console.log(id.toNumber());
+  if (id.toNumber() !== 3) {
+    console.log('ERRRRRRRRRRR');
+  }
+  console.log('total partner nfts on bsc', id.toNumber());
   return true;
 };
 
-func.tags = ['CybertinoNFTV0_Migration', 'nft'];
-func.id = '001';
+func.tags = ['003_CybertinoNFTV0_BSC_Partner_Migration', 'nft'];
+func.id = '003_CybertinoNFTV0_BSC_Partner_Migration';
+func.dependencies = ['CybertinoNFTV0_Partner'];
 
 export default func;
 func.skip = async ({ network }) => {
-  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+  if (network.name === 'mainnet' || network.name === 'rinkeby') {
     return true;
   }
   return false;

@@ -65,3 +65,9 @@ export default func;
 func.tags = ['CybertinoCanvasBSCMigrate', 'interactive'];
 func.dependencies = ['CybertinoCanvasCMCMigrate', 'CMCLayerV0_BSC'];
 func.id = '005_CybertinoCanvasBSC';
+func.skip = async ({ network }) => {
+  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+    return true;
+  }
+  return false;
+};

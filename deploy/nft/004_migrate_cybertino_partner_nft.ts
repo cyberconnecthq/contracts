@@ -81,8 +81,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const gasPrice = ethers.utils.parseUnits('15', 'gwei');
 
   await nftAdmin.batchCreate(cids, datas, maxSupplys, {
-    gasLimit: 6000000,
-    gasPrice: gasPrice,
+    // gasLimit: 6000000,
+    // gasPrice: gasPrice,
   });
   const id = await nft.id();
   console.log(id.toNumber());
@@ -91,5 +91,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 func.tags = ['CybertinoNFTV0_Partner_Migration', 'nft'];
 func.id = '002';
+func.dependencies = ['CybertinoNFTV0_Partner'];
 
 export default func;
+func.skip = async ({ network }) => {
+  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+    return true;
+  }
+  return false;
+};

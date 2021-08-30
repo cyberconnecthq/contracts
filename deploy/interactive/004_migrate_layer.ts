@@ -64,3 +64,9 @@ export default func;
 func.tags = ['CMCLayerMigrate', 'interactive'];
 func.dependencies = ['CMCLayerV0'];
 func.id = '001_CMCLayerMigrate';
+func.skip = async ({ network }) => {
+  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+    return true;
+  }
+  return false;
+};

@@ -171,3 +171,9 @@ export default func;
 func.tags = ['CybertinoCanvasCMCAirdrop', 'interactive', 'airdrop'];
 func.dependencies = ['CybertinoCanvasBSCMigrate'];
 func.id = '006_Airdrop_CybertinoCanvasCMC';
+func.skip = async ({ network }) => {
+  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+    return true;
+  }
+  return false;
+};

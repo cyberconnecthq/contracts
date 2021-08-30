@@ -22,6 +22,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     baseUri = 'https://api.cybertino.io/metadata/nft/';
     name = 'CybertinoPartnerNFTRinkeby';
     sym = 'CYBER_NFT_PARTNER_RINKEBY';
+  } else if (tags['bsc']) {
+    baseUri = 'https://api.cybertino.io/metadata/nft/';
+    name = 'CybertinoPartnerNFT';
+    sym = 'CYBER_PARTNER_NFT';
+    signer = '0xF96E96A63B484B28C8d1Ce4b96D212d25d5Bb4AB';
   } else {
     baseUri = 'https://api.stg.cybertino.io/metadata/nft/';
     name = 'CybertinoPartnerNFTTest';

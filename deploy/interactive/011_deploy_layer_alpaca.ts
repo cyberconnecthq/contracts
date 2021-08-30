@@ -13,23 +13,23 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const maxState = 3;
 
   if (network.tags['prd']) {
-    name = 'CybertinoBSCLayer';
-    sy = 'CYBER_BSC_LAYER';
+    name = 'CybertinoALPACALayer';
+    sy = 'CYBER_ALPACA_LAYER';
   } else if (network.tags['stg']) {
-    name = 'CybertinoBSCLayerTest';
-    sy = 'CYBER_BSC_LAYER_TEST';
+    name = 'CybertinoALPACALayerTest';
+    sy = 'CYBER_ALPACA_LAYER_TEST';
   } else {
     throw 'Network not supported';
   }
 
-  if (network.name === 'rinkeby') {
-    oracle = '0xcf0f51ca2cDAecb464eeE4227f5295F2384F84ED';
-    interval = 30 * 60;
-    threshold = 5;
-  } else if (network.name === 'mainnet') {
-    oracle = '0x14e613AC84a31f709eadbdF89C6CC390fDc9540A';
-    interval = 24 * 60 * 60; // one day
-    threshold = 500;
+  if (network.name === 'bsc-testnet') {
+    oracle = '0xe0073b60833249ffd1bb2af809112c2fbf221DF6'; // NOT Available
+    interval = 4 * 60 * 60; // 4 hour
+    threshold = 300;
+  } else if (network.name === 'bsc') {
+    oracle = '0xe0073b60833249ffd1bb2af809112c2fbf221DF6';
+    interval = 4 * 60 * 60; // 4 hour
+    threshold = 300;
   } else if (network.name === 'hardhat') {
     let Aggregator = await deployments.get('MockAggregator');
     oracle = Aggregator.address;
@@ -39,7 +39,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     throw 'Network not supported';
   }
 
-  const deployResult = await deploy('CMCLayerV0_BSC', {
+  const deployResult = await deploy('CMCLayerV0_ALPACA', {
     contract: 'CMCLayerV0',
     from: deployer,
     proxy: {
@@ -52,10 +52,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 export default func;
-func.tags = ['CMCLayerV0_BSC', 'interactive'];
+func.tags = ['CMCLayerV0_ALPACA', 'interactive'];
 func.dependencies = ['MockAggregator'];
 func.skip = async ({ network }) => {
-  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+  if (network.name === 'mainnet' || network.name === 'rinkeby') {
     return true;
   }
   return false;

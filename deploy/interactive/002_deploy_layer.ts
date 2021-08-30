@@ -52,4 +52,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func;
 func.tags = ['CMCLayerV0', 'interactive'];
 func.dependencies = ['MockAggregator'];
-// func.runAtTheEnd = true; // For test environment to have  price aggregator deployed first
+func.skip = async ({ network }) => {
+  if (network.name === 'bsc' || network.name === 'bsc-testnet') {
+    return true;
+  }
+  return false;
+};
