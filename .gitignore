@@ -1,4 +1,5 @@
 node_modules
+.DS_Store
 
 #Hardhat files
 cache
@@ -7,3 +8,9 @@ typechain
 
 #env
 .env
+
+# local deployments
+deployments/hardhat
+
+# local scripts
+scripts/tmp.ts

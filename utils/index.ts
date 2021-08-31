@@ -1,6 +1,8 @@
 import { ethers } from 'hardhat';
 import { BigNumber } from '@ethersproject/bignumber';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signer-with-address';
+import { Deployment } from 'hardhat-deploy/dist/types';
+import type { ethers as ethersType } from 'ethers';
 
 type Address = string;
 
@@ -38,4 +40,10 @@ export const getEthBalance = async (account: Address): Promise<BigNumber> => {
 // NOTE ethers.signers may be a hardhat specific function
 export const getWallets = async (): Promise<SignerWithAddress[]> => {
   return (await ethers.getSigners()) as SignerWithAddress[];
+};
+
+export const getContract = async <T extends ethersType.Contract>(
+  deployment: Deployment
+): Promise<T> => {
+  return (await ethers.getContractAt(deployment.abi, deployment.address)) as T;
 };

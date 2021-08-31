@@ -17,25 +17,6 @@ interface argsType {
   name: string;
 }
 
-task('sign-influencer', 'Sign a Influencer')
-  .addParam(
-    'name',
-    'Influencer name must be lower case and snake, like binance_smart_chain'
-  )
-  .setAction(async (args: argsType, hre) => {
-    const { name } = args;
-    const { host, networkName } = await getNetwork(hre);
-    await sign(name, host, networkName, hre);
-  });
-
-task(
-  'verify-influencer',
-  'Verify all unverified influencer contracts'
-).setAction(async (_, hre) => {
-  const { host, networkName } = await getNetwork(hre);
-  await verifyInfluencer(host, networkName, hre);
-});
-
 const getNetwork = async (hre: HardhatRuntimeEnvironment) => {
   const chainId = await getChainId(hre);
   if (chainId === '31337') {

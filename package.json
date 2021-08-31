@@ -7,13 +7,26 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "deploy": "npx hardhat deploy",
+    "deploy": "npx hardhat deploy --write true",
     "deploy:rinkeby": "npx hardhat deploy --network rinkeby",
+    "deploy:rinkeby-prd": "npx hardhat deploy --network rinkeby-prd",
     "deploy:bsc-testnet": "npx hardhat deploy --network bsc-testnet",
     "deploy:bsc": "npx hardhat deploy --network bsc",
-    "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby && hardhat etherscan-verify-proxy --network rinkeby",
-    "etherscan:bsc-testnet": "hardhat etherscan-verify --network bsc-testnet && hardhat etherscan-verify-proxy --network bsc-testnet",
-    "etherscan:bsc": "hardhat etherscan-verify --network bsc && hardhat etherscan-verify-proxy --network bsc",
+    "deploy:eth": "npx hardhat deploy --network mainnet",
+    "deploy-nft": "npx hardhat deploy --tags nft",
+    "deploy-nft:bsc-testnet": "npx hardhat deploy --tags nft --network bsc-testnet",
+    "deploy-nft:bsc": "npx hardhat deploy --tags nft --network bsc",
+    "deploy-interactive": "npx hardhat deploy --tags interactive --write true",
+    "deploy-interactive:rinkeby": "npx hardhat deploy --network rinkeby --tags interactive",
+    "deploy-interactive:eth": "npx hardhat deploy --network mainnet --tags interactive",
+    "deploy-interactive:bsc-testnet": "npx hardhat deploy --network bsc-testnet --tags interactive",
+    "deploy-interactive:bsc": "npx hardhat deploy --network bsc --tags interactive",
+    "etherscan:rinkeby": "hardhat etherscan-verify --network rinkeby",
+    "etherscan:rinkeby-prd": "hardhat etherscan-verify --network rinkeby-prd",
+    "etherscan-full:rinkeby": "hardhat etherscan-verify --network rinkeby",
+    "etherscan:bsc-testnet": "hardhat etherscan-verify --network bsc-testnet",
+    "etherscan:bsc": "hardhat etherscan-verify --network bsc",
+    "etherscan:eth": "hardhat etherscan-verify --network mainnet",
     "console": "npx hardhat console --no-compile"
   },
   "author": "Ryan Li <r@cybertinolab.com>",
@@ -53,6 +66,8 @@
     "@artifacts": "artifacts"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.1.0"
+    "@openzeppelin/contracts": "^4.1.0",
+    "hardhat-gas-reporter": "^1.0.4",
+    "@chainlink/contracts": "^0.2.1"
   }
 }
