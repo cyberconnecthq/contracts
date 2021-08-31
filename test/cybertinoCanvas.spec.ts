@@ -10,7 +10,7 @@ describe('CybertinoCanvas', () => {
   let nftAdmin: CybertinoCanvasV0;
   let nftPlatform: CybertinoCanvasV0;
   const data = '0x';
-  const baseUri = 'https://api.stg.cybertino.io/nft/metadata/';
+  const baseUri = 'https://api.stg.cybertino.io/metadata/nft/';
   let deployer: Account, admin: Account, platformSigner: Account;
 
   const addressOne = '0xF4A8f74879182FF2A07468508bec89e1E7464027';
