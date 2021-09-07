@@ -35,7 +35,7 @@ contract LaunchNFTV0 is
     address _signer
   ) public initializer {
     __ERC721_init(_name, _symbol);
-    __Ownable_init_unchained(); // xxx(@cc): need this, otherwise deploy fails
+    __Ownable_init_unchained();
     __LaunchNFT_init_unchained(_uri, _price, _whitelistPrice, _maxPurchaseNum, _maxSupply, _reserveNum, _owner, _signer);
   }
 
