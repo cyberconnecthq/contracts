@@ -80,8 +80,18 @@ describe('LaunchNFTV0', () => {
       expect(await nft.id()).to.equal(21);
       expect(await nft.tokenURI(21)).to.equal(`${baseUri}21`);
     });
-    // TODO
-    it('cannot mint exceeding max supply', async () => {});
+    it('cannot mint exceeding max supply', async () => {
+      await nftAdmin.flipMintingState();
+      for (let i = 0; i < 644; i++) {
+        await nft.mint(20, {
+          value: ethers.utils.parseEther('1.8'),
+        });
+      }
+      expect(await nft.id()).to.equal(12880);
+      await expect(nft.mint(20)).to.be.revertedWith(
+        'Minting would exceed max supply'
+      );
+    });
   });
   describe('reserve', async () => {
     it('reserve before hitting max', async () => {
@@ -96,8 +106,18 @@ describe('LaunchNFTV0', () => {
         expect(await nft.mintedReserveNum()).to.equal(90 + i * 30);
       }
     });
-    // TODO
-    it('cannot reserve if exceeding max', async () => {});
+    it('cannot reserve if exceeding max', async () => {
+      await nftAdmin.flipMintingState();
+      for (let i = 0; i < 644; i++) {
+        await nft.mint(20, {
+          value: ethers.utils.parseEther('1.8'),
+        });
+      }
+      expect(await nft.id()).to.equal(12880);
+      await expect(nftAdmin.reserve()).to.be.revertedWith(
+        'Reserving would exceed max supply'
+      );
+    });
   });
   describe('whitelist', async () => {
     it('whitelist must have correct batch size', async () => {
@@ -137,8 +157,27 @@ describe('LaunchNFTV0', () => {
         .to.emit(nft, 'Transfer')
         .withArgs(ethers.constants.AddressZero, deployer.address, 1);
     });
-    // TODO
-    it('cannot whitelist mint exceeding max supply', async () => {});
+    it('cannot whitelist mint exceeding max supply', async () => {
+      await nftAdmin.flipMintingState();
+      for (let i = 0; i < 644; i++) {
+        await nft.mint(20, {
+          value: ethers.utils.parseEther('1.8'),
+        });
+      }
+      expect(await nft.id()).to.equal(12880);
+      let signatureList: Array<string> = [];
+      for (let i = 0; i < 9; i++) {
+        const hash = await nft.getMessageHash(deployer.address, i+1);
+        const hashBytes = ethers.utils.arrayify(hash);
+        const signature = await signer.wallet.signMessage(hashBytes);
+        signatureList.push(signature);
+      }
+      await expect(
+        nft.whitelistMint([1, 2, 3, 4, 5, 6, 7, 8, 9], signatureList, {
+          value: ethers.utils.parseEther('0.54'),
+        })
+      ).to.be.revertedWith('Minting would exceed max supply');
+    });
     it('cannot mint already minted', async () => {
       const hash = await nft.getMessageHash(deployer.address, 1);
       const hashBytes = ethers.utils.arrayify(hash);
