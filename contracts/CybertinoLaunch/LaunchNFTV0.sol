@@ -89,8 +89,20 @@ contract LaunchNFTV0 is
     mintedReserveNum += afterReserve - beforeReserve;
   }
 
-  function flipMintingState() public onlyOwner {
+  function flipMintingState() external onlyOwner {
     isMintingActive = !isMintingActive;
+  }
+
+  function setPrice(uint256 _price) external onlyOwner {
+    price = _price;
+  }
+
+  function setAdmin(address _admin) external onlyOwner {
+    transferOwnership(_admin);
+  }
+
+  function setSigner(address _signer) external onlyOwner {
+    whitelistSigner = _signer;
   }
 
   /**

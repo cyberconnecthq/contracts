@@ -20,7 +20,7 @@ describe('LaunchNFTV0', () => {
   });
   describe('basic', async () => {
     it('has correct name and symbol', async () => {
-      expect(await nft.name()).to.eq('Baby Ranger NFT');
+      expect(await nft.name()).to.eq('Baby Ranger');
       expect(await nft.symbol()).to.eq('BABY_RANGER');
     });
     it('has correct signer', async () => {
@@ -48,7 +48,27 @@ describe('LaunchNFTV0', () => {
         'Ownable: caller is not the owner'
       );
     });
+    it('only admin could set price', async () => {
+      await expect(
+        nft.setPrice(ethers.utils.parseEther('0.01'))
+      ).to.be.revertedWith('Ownable: caller is not the owner');
+    });
+    it('only admin could set owner', async () => {
+      await expect(
+        nft.setAdmin(ethers.constants.AddressZero)
+      ).to.be.revertedWith('Ownable: caller is not the owner');
+      await nftAdmin.setAdmin(deployer.address);
+      expect(await nft.owner()).to.equal(deployer.address);
+    });
+    it('only admin could set signer', async () => {
+      await expect(
+        nft.setSigner(ethers.constants.AddressZero)
+      ).to.be.revertedWith('Ownable: caller is not the owner');
+      await nftAdmin.setSigner(deployer.address);
+      expect(await nft.whitelistSigner()).to.equal(deployer.address);
+    });
   });
+
   describe('mint', async () => {
     it('only after minting started', async () => {
       await expect(nft.mint(1)).to.be.revertedWith('Minting must be active');
@@ -69,26 +89,26 @@ describe('LaunchNFTV0', () => {
       await nftAdmin.flipMintingState();
       await expect(
         nft.mint(1, {
-          value: ethers.utils.parseEther('0.09'),
+          value: ethers.utils.parseEther('0.12'),
         })
       )
         .to.emit(nft, 'Transfer')
         .withArgs(ethers.constants.AddressZero, deployer.address, 1);
-      await nft.mint(20, {
-        value: ethers.utils.parseEther('1.8'),
+      await nft.mint(5, {
+        value: ethers.utils.parseEther('0.6'),
       });
-      expect(await nft.id()).to.equal(21);
-      expect(await nft.tokenURI(21)).to.equal(`${baseUri}21`);
+      expect(await nft.id()).to.equal(6);
+      expect(await nft.tokenURI(6)).to.equal(`${baseUri}6`);
     });
     it('cannot mint exceeding max supply', async () => {
       await nftAdmin.flipMintingState();
-      for (let i = 0; i < 644; i++) {
-        await nft.mint(20, {
+      for (let i = 0; i < 2777; i++) {
+        await nft.mint(5, {
           value: ethers.utils.parseEther('1.8'),
         });
       }
-      expect(await nft.id()).to.equal(12880);
-      await expect(nft.mint(20)).to.be.revertedWith(
+      expect(await nft.id()).to.equal(13885);
+      await expect(nft.mint(5)).to.be.revertedWith(
         'Minting would exceed max supply'
       );
     });
@@ -108,12 +128,12 @@ describe('LaunchNFTV0', () => {
     });
     it('cannot reserve if exceeding max', async () => {
       await nftAdmin.flipMintingState();
-      for (let i = 0; i < 644; i++) {
-        await nft.mint(20, {
+      for (let i = 0; i < 2777; i++) {
+        await nft.mint(5, {
           value: ethers.utils.parseEther('1.8'),
         });
       }
-      expect(await nft.id()).to.equal(12880);
+      expect(await nft.id()).to.equal(13885);
       await expect(nftAdmin.reserve()).to.be.revertedWith(
         'Reserving would exceed max supply'
       );
@@ -156,18 +176,20 @@ describe('LaunchNFTV0', () => {
       )
         .to.emit(nft, 'Transfer')
         .withArgs(ethers.constants.AddressZero, deployer.address, 1);
+      expect(await nft.hasMinted(1)).to.be.true;
+      expect(await nft.hasMinted(2)).to.be.true;
     });
     it('cannot whitelist mint exceeding max supply', async () => {
       await nftAdmin.flipMintingState();
-      for (let i = 0; i < 644; i++) {
-        await nft.mint(20, {
+      for (let i = 0; i < 2777; i++) {
+        await nft.mint(5, {
           value: ethers.utils.parseEther('1.8'),
         });
       }
-      expect(await nft.id()).to.equal(12880);
+      expect(await nft.id()).to.equal(13885);
       let signatureList: Array<string> = [];
       for (let i = 0; i < 9; i++) {
-        const hash = await nft.getMessageHash(deployer.address, i+1);
+        const hash = await nft.getMessageHash(deployer.address, i + 1);
         const hashBytes = ethers.utils.arrayify(hash);
         const signature = await signer.wallet.signMessage(hashBytes);
         signatureList.push(signature);
@@ -199,6 +221,19 @@ describe('LaunchNFTV0', () => {
           value: ethers.utils.parseEther('0.06'),
         })
       ).to.be.revertedWith(' Whitelist already claimed');
+    });
+    it('Change price', async () => {
+      const newPrice = ethers.utils.parseEther('0.06');
+      await nftAdmin.setPrice(newPrice);
+      expect(await nft.price()).to.equal(newPrice);
+      await nftAdmin.flipMintingState();
+      await expect(
+        nft.mint(1, {
+          value: ethers.utils.parseEther('0.06'),
+        })
+      )
+        .to.emit(nft, 'Transfer')
+        .withArgs(ethers.constants.AddressZero, deployer.address, 1);
     });
   });
 });
